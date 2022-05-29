@@ -30,38 +30,49 @@ end
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
     enabled = true,
-    updateTime = 1200,
+    updateTime = 2000,
     maxQuality = ITEM_QUALITY_ARTIFACT,
     minQuality = ITEM_QUALITY_ARCANE
 }
-
-NAMESPACE.buffFood = {
-    [72822] = { Health = true }, [17407] = { Health = true }, [66551] = { Health = true },
-    [61259] = { Health = true }, [66124] = { Health = true }, [66125] = { Health = true },
-    [72816] = { Health = true }, [72824] = { Health = true }, [72957] = { Health = true },
-    [72960] = { Health = true }, [72962] = { Health = true }, [72819] = { Health = true },
-    [89971] = { Health = true },
-    --	[17565]=true,[17567]=true,[17569]=true,[47049]=true,[47051]=true,[66576]=true,[17573]=true,[47050]=true,
-    [17577] = { Magicka = true, Stamina = true }, [61294] = { Magicka = true, Stamina = true },
-    [72961] = { Magicka = true, Stamina = true }, [84681] = { Magicka = true, Stamina = true },
-    [61257] = { Health = true, Magicka = true }, [72959] = { Health = true, Magicka = true },
-    [84731] = { Health = true, Magicka = true }, [84735] = { Health = true, Magicka = true },
-    [100498] = { Health = true, Magicka = true }, [107748] = { Health = true, Magicka = true },
-    [127531] = { Health = true, Magicka = true }, [61261] = { Stamina = true }, [66129] = { Stamina = true },
-    [66130] = { Stamina = true }, [68412] = { Stamina = true }, [86673] = { Stamina = true },
-    [66127] = { Magicka = true }, [66128] = { Magicka = true }, [68413] = { Magicka = true },
-    [66568] = { Magicka = true }, [61260] = { Magicka = true }, [84678] = { Magicka = true },
-    [84709] = { Magicka = true }, [84725] = { Magicka = true }, [84720] = { Magicka = true },
-    [61341] = true, [61344] = true, [61340] = true, [61335] = true, [61345] = true, [66131] = true,
-    [66132] = true, [66136] = true, [66137] = true, [66140] = true, [66141] = true, [17614] = true,
-    [61350] = true, [84700] = true, [84704] = true, [100502] = true, [68416] = true, [86746] = true,
-    [86559] = true, --Recovery
-    [68411] = { Health = true, Magicka = true, Stamina = true }, [17581] = { Health = true, Magicka = true, Stamina = true },
-    [61218] = { Health = true, Magicka = true, Stamina = true }, [85484] = { Health = true, Magicka = true, Stamina = true },
-    [100488] = { Health = true, Magicka = true, Stamina = true }, [127596] = { Health = true, Magicka = true, Stamina = true },
-    [72956] = { Health = true, Stamina = true }, [61255] = { Health = true, Stamina = true }, [89957] = { Health = true, Stamina = true },
-    [107789] = { Health = true, Stamina = true }, [127572] = { Health = true, Stamina = true }
+-- Raid Notifier algorithm. Thanx memus
+NAMESPACE.blackList = {
+    [43752] = true, -- Soul Summons / Seelenbeschwörung
+    [21263] = true, -- Ayleid Health Bonus
+    [92232] = true, -- Pelinals Wildheit
+    [64210] = true, -- erhöhter Erfahrungsgewinn
+    [66776] = true, -- erhöhter Erfahrungsgewinn
+    [77123] = true, -- Jubiläums-Erfahrungsbonus 2017
+    [85501] = true, -- erhöhter Erfahrungsgewinn
+    [85502] = true, -- erhöhter Erfahrungsgewinn
+    [85503] = true, -- erhöhter Erfahrungsgewinn
+    [86755] = true, -- Feiertags-Erfahrungsbonus
+    [88445] = true, -- erhöhter Erfahrungsgewinn
+    [89683] = true, -- erhöhter Erfahrungsgewinn
+    [91369] = true, -- erhöhter Erfahrungsgewinn der Narrenpastete
 }
+
+local function GetActiveFoodBuff(abilityId)
+    if NAMESPACE.blackList[abilityId] then
+        return false
+    end
+    if DoesAbilityExist(abilityId) then
+        if GetAbilityTargetDescription(abilityId) ~= GetString(SI_TARGETTYPE2)
+                or GetAbilityEffectDescription(abilityId) ~= ""
+                or GetAbilityRadius(abilityId) > 0
+                or GetAbilityAngleDistance(abilityId) > 0
+                or GetAbilityDuration(abilityId) < 600000 then
+            return false
+        end
+        local cost, mechanic = GetAbilityCost(abilityId)
+        local channeled, castTime = GetAbilityCastInfo(abilityId)
+        local minRangeCM, maxRangeCM = GetAbilityRange(abilityId)
+        if cost > 0 or mechanic > 0 or channeled or castTime > 0 or minRangeCM > 0 or maxRangeCM > 0 or GetAbilityDescription(abilityId) == "" then
+            return false
+        end
+        return true
+    end
+end
+
 
 local function processAutoEat()
     if not WellEater:prepareToAnalize() then
@@ -128,18 +139,17 @@ local function TimersUpdate()
     local numBuffs = GetNumBuffs("player")
     local foodQuantity = 0
     for i = 1, numBuffs do
-        local timeEnding, abilityId
-        _, _, timeEnding, _, _, _, _, _, _, _, abilityId = GetUnitBuffInfo("player", i)
-        local bFood = NAMESPACE.buffFood[abilityId]
+        local timeEnding, abilityId, canClickOff
+        _, _, timeEnding, _, _, _, _, _, _, _, abilityId, canClickOff = GetUnitBuffInfo("player", i)
+        local bFood = (GetActiveFoodBuff(abilityId) and canClickOff)
         foodQuantity = timeEnding * 1000 - now
-        haveFood = ((bFood and type(bFood) == "table") and (foodQuantity > 0))
+        haveFood = (bFood and (foodQuantity > 0))
         if haveFood then
             break
         end
     end
-    d(WellEater.AddonName .. " Char Has Food")
     if not haveFood then
-        d("Time To Eat")
+        d(WellEater.AddonName .. " Time To Eat")
         processAutoEat()
     end
 
