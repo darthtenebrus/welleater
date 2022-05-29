@@ -13,22 +13,26 @@ function WellEater:setUserPreference(setting, value)
 end
 
 function WellEater:isAddonEnabled()
-    d(WellEater.AddonName .. " not enabled")
-    return self.getUserPreference("enabled")
+
+    local locEnabled = self:getUserPreference("enabled")
+
+    if not locEnabled then
+        d(WellEater.AddonName .. " NOT enabled")
+    end
+    return locEnabled
 end
 
 function WellEater:prepareToAnalize()
-    return self.isAddonEnabled() and not IsUnitInCombat("player") and not IsUnitSwimming("player")
+    return self:isAddonEnabled() and not IsUnitInCombat("player") and not IsUnitSwimming("player")
 end
+-- local functions
 
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
     enabled = true,
-    updateTime = 1000,
-    quality = ITEM_QUALITY_ARTIFACT,
-    foodOnMagicka = true,
-    foodOnHealth = true,
-    foodOnStamina = true
+    updateTime = 1200,
+    maxQuality = ITEM_QUALITY_ARTIFACT,
+    minQuality = ITEM_QUALITY_ARCANE
 }
 
 NAMESPACE.buffFood = {
@@ -80,11 +84,24 @@ local function processAutoEat()
             if itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK then
                 local icon, stack, sellPrice, meetsUsageRequirement, locked, equipType, itemStyleId, quality = GetItemInfo(bagId, slotId)
 
-                local itemQ = WellEater:getUserPreference("quality")
-                if itemQ and meetsUsageRequirement and itemQ == quality then
+                local maxItemQ = WellEater:getUserPreference("maxQuality")
+                local minItemQ = WellEater:getUserPreference("minQuality")
+                if meetsUsageRequirement and maxItemQ and maxItemQ >= quality
+                    and minItemQ and minItemQ <= quality then
 
                     local usable, onlyFromActionSlot = IsItemUsable(bagId, slotId)
                     if usable and not onlyFromActionSlot then
+
+                        local itemLink = GetItemLink(bagId, slotId)
+                        local hasAbility,abilityHeader,abilityDescription = GetItemLinkOnUseAbilityInfo(itemLink)
+
+                        local formattedName = zo_strformat("<<1>>", GetItemLinkName(itemLink)) -- no control codes
+
+                        if formattedName and abilityDescription then
+                            d("Name = " .. formattedName)
+                            d("Description = " .. abilityDescription)
+                        end
+
 
                         if IsProtectedFunction("UseItem") then
                             CallSecureProtected("UseItem", bagId, slotId)
@@ -101,11 +118,10 @@ local function processAutoEat()
 end
 
 local function TimersUpdate()
+
     if not WellEater:prepareToAnalize() then
         return
     end
-
-    d(WellEater.AddonName .. " Time Tick")
 
     local haveFood = false
     local now = GetGameTimeMilliseconds()
@@ -121,18 +137,15 @@ local function TimersUpdate()
             break
         end
     end
-    d(WellEater.AddonName .. " Char Food = " .. haveFood)
-    d(WellEater.AddonName .. " Char Food Quantity = " .. foodQuantity)
+    d(WellEater.AddonName .. " Char Has Food")
     if not haveFood then
+        d("Time To Eat")
         processAutoEat()
     end
 
 end
 
-local function StartUp(_, addonName)
-    if WellEater.AddonName ~= addonName then
-        return
-    end
+local function StartUp()
 
     if not WellEater:isAddonEnabled() then
         return
@@ -150,14 +163,34 @@ local function ShutDown()
     EVENT_MANAGER:UnregisterForUpdate(WellEater.AddonName .. "_TimersUpdate")
 end
 
+local function InitOnLoad(_, addonName)
+    if WellEater.AddonName ~= addonName then
+        return
+    end
+    EVENT_MANAGER:UnregisterForEvent(WellEater.AddonName, EVENT_ADD_ON_LOADED)
+    StartUp()
+end
+
+local function OnUIError(_,errorString)
+    --Hide some bugs
+    --      if string.match(errorString,"Too many anchors")~=nil
+    --      or string.match(errorString,"LibMapPins")~=nil
+    if string.match(errorString,WellEater.AddonName) then
+        ShutDown()
+        ZO_UIErrorsTextEdit:SetText(errorString)
+        ZO_UIErrorsTextEdit:SetCursorPosition(1)
+    end
+end
+
 -- Settings initialization
 WellEater.settingsUser = ZO_SavedVars:NewCharacterIdSettings( "WellEater_Settings",
         WellEater.WELLEATER_SAVED_VERSION,
         "general",
         NAMESPACE.settingsDefaults)
+
 -- Init Hook --
 EVENT_MANAGER:RegisterForEvent(
-        WellEater.AddonName, EVENT_ADD_ON_LOADED, StartUp)
+        WellEater.AddonName, EVENT_ADD_ON_LOADED, InitOnLoad)
 
 EVENT_MANAGER:RegisterForEvent(
         WellEater.AddonName,
@@ -170,7 +203,7 @@ EVENT_MANAGER:RegisterForEvent(
 
             if not arg then
                 d(WellEater.AddonName .. " Combat entered")
-                StartUp(_,WellEater.AddonName)
+                StartUp()
             else
                 d(WellEater.AddonName .. " Combat exit")
                 ShutDown()
@@ -199,7 +232,10 @@ EVENT_MANAGER:RegisterForEvent(
             end
 
             d(WellEater.AddonName .. " Swim exit")
-            StartUp(_,WellEater.AddonName)
+            StartUp()
         end
 )
+
+EVENT_MANAGER:RegisterForEvent(WellEater.AddonName, EVENT_LUA_ERROR, OnUIError)
+
 
