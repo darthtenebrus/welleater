@@ -1,6 +1,6 @@
 WellEater = WellEater or {}
-WellEater.WELL_EATER_SAVED_VERSION = 1
-WellEater.AddonName = "Well_Eater"
+WellEater.WELLEATER_SAVED_VERSION = 1
+WellEater.AddonName = "WellEater"
 
 function WellEater:getUserPreference(setting)
     return self.settingsUser and self.settingsUser[setting]
@@ -151,8 +151,8 @@ local function ShutDown()
 end
 
 -- Settings initialization
-WellEater.settingsUser = ZO_SavedVars:NewCharacterIdSettings( "Well_Eater_Settings",
-        WellEater.WELL_EATER_SAVED_VERSION,
+WellEater.settingsUser = ZO_SavedVars:NewCharacterIdSettings( "WellEater_Settings",
+        WellEater.WELLEATER_SAVED_VERSION,
         "general",
         NAMESPACE.settingsDefaults)
 -- Init Hook --

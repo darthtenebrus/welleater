@@ -3,6 +3,6 @@
 ## APIVersion: 101033
 ## Description: Auto eat your preferred meals provided by your inventory after food or drink buff expiration.
 ## Version: 1.0.0
-## SavedVariables: Well_Eater_Settings
+## SavedVariables: WellEater_Settings
 
-Well_Eater.lua
+WellEater.lua
