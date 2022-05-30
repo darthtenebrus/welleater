@@ -1,6 +1,16 @@
 WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
+WellEater.Version = "1.0.0"
+WellEater.Author = "esorochinskiy"
+
+function WellEater:getVersion()
+    return self.Version
+end
+
+function WellEater:getAuthor()
+    return self.Author
+end
 
 function WellEater:getUserPreference(setting)
     return self.settingsUser and self.settingsUser[setting]
@@ -31,7 +41,7 @@ local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
     enabled = true,
     updateTime = 2000,
-    maxQuality = ITEM_QUALITY_ARTIFACT,
+    maxQuality = ITEM_QUALITY_ARCANE,
     minQuality = ITEM_QUALITY_ARCANE
 }
 -- Raid Notifier algorithm. Thanx memus
@@ -161,7 +171,7 @@ local function StartUp()
         return
     end
 
-    d(WellEater.AddonName .. " Started")
+    d(WellEater.AddonName .. " Timer Started")
     local upTime = WellEater:getUserPreference("updateTime")
     if upTime then
         EVENT_MANAGER:RegisterForUpdate(WellEater.AddonName .. "_TimersUpdate", upTime, TimersUpdate)
@@ -212,10 +222,10 @@ EVENT_MANAGER:RegisterForEvent(
             end
 
             if not arg then
-                d(WellEater.AddonName .. " Combat entered")
+                d(WellEater.AddonName .. " Combat exited")
                 StartUp()
             else
-                d(WellEater.AddonName .. " Combat exit")
+                d(WellEater.AddonName .. " Combat entered")
                 ShutDown()
             end
         end
