@@ -4,5 +4,10 @@
 ## Description: Auto eat your preferred meals provided by your inventory after food or drink buff expiration.
 ## Version: 1.0.0
 ## SavedVariables: WellEater_Settings
+## DependsOn: LibAddonMenu-2.0>=28
 
 WellEater.lua
+UI.lua
+lang/en.lua
+lang/$(language).lua
+

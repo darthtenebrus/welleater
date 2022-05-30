@@ -1,8 +1,25 @@
 WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
+WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
 WellEater.Version = "1.0.0"
-WellEater.Author = "esorochinskiy"
+WellEater.Author = "|c5EFFF5esorochinskiy|r"
+local NAMESPACE = {}
+NAMESPACE.settingsDefaults = {
+    enabled = true,
+    updateTime = 2000,
+    maxQuality = ITEM_QUALITY_ARCANE,
+    minQuality = ITEM_QUALITY_ARCANE
+}
+
+function WellEater:getAddonName()
+    return self.AddonName
+end
+
+function WellEater:getDisplayName()
+    return self.DisplayName
+end
+
 
 function WellEater:getVersion()
     return self.Version
@@ -14,6 +31,10 @@ end
 
 function WellEater:getUserPreference(setting)
     return self.settingsUser and self.settingsUser[setting]
+end
+
+function WellEater:getUserDefault(setting)
+    return NAMESPACE.settingsDefaults and NAMESPACE.settingsDefaults[setting]
 end
 
 function WellEater:setUserPreference(setting, value)
@@ -33,17 +54,11 @@ function WellEater:isAddonEnabled()
 end
 
 function WellEater:prepareToAnalize()
-    return self:isAddonEnabled() and not IsUnitInCombat("player") and not IsUnitSwimming("player")
+    return self:isAddonEnabled() and not IsUnitInCombat("player")
+            and not IsUnitSwimming("player") and not IsUnitDead("player")
 end
 -- local functions
 
-local NAMESPACE = {}
-NAMESPACE.settingsDefaults = {
-    enabled = true,
-    updateTime = 2000,
-    maxQuality = ITEM_QUALITY_ARCANE,
-    minQuality = ITEM_QUALITY_ARCANE
-}
 -- Raid Notifier algorithm. Thanx memus
 NAMESPACE.blackList = {
     [43752] = true, -- Soul Summons / Seelenbeschwörung
@@ -61,7 +76,7 @@ NAMESPACE.blackList = {
     [91369] = true, -- erhöhter Erfahrungsgewinn der Narrenpastete
 }
 
-local function GetActiveFoodBuff(abilityId)
+local function getActiveFoodBuff(abilityId)
     if NAMESPACE.blackList[abilityId] then
         return false
     end
@@ -76,13 +91,19 @@ local function GetActiveFoodBuff(abilityId)
         local cost, mechanic = GetAbilityCost(abilityId)
         local channeled, castTime = GetAbilityCastInfo(abilityId)
         local minRangeCM, maxRangeCM = GetAbilityRange(abilityId)
-        if cost > 0 or mechanic > 0 or channeled or castTime > 0 or minRangeCM > 0 or maxRangeCM > 0 or GetAbilityDescription(abilityId) == "" then
-            return false
-        end
-        return true
+        local abilityDescription = GetAbilityDescription(abilityId)
+        return not (cost > 0 or mechanic > 0 or channeled or castTime > 0 or
+                minRangeCM > 0 or maxRangeCM > 0 or abilityDescription == "")
     end
 end
 
+local function tryToUseItem(bagId, slotId)
+    if IsProtectedFunction("UseItem") then
+        CallSecureProtected("UseItem", bagId, slotId)
+    else
+        UseItem(bagId, slotId)
+    end
+end
 
 local function processAutoEat()
     if not WellEater:prepareToAnalize() then
@@ -123,12 +144,7 @@ local function processAutoEat()
                             d("Description = " .. abilityDescription)
                         end
 
-
-                        if IsProtectedFunction("UseItem") then
-                            CallSecureProtected("UseItem", bagId, slotId)
-                        else
-                            UseItem(bagId, slotId)
-                        end
+                        tryToUseItem(bagId, slotId)
 
                         break
                     end
@@ -151,7 +167,7 @@ local function TimersUpdate()
     for i = 1, numBuffs do
         local timeEnding, abilityId, canClickOff
         _, _, timeEnding, _, _, _, _, _, _, _, abilityId, canClickOff = GetUnitBuffInfo("player", i)
-        local bFood = (GetActiveFoodBuff(abilityId) and canClickOff)
+        local bFood = (getActiveFoodBuff(abilityId) and canClickOff)
         foodQuantity = timeEnding * 1000 - now
         haveFood = (bFood and (foodQuantity > 0))
         if haveFood then
@@ -166,7 +182,6 @@ local function TimersUpdate()
 end
 
 local function StartUp()
-
     if not WellEater:isAddonEnabled() then
         return
     end
@@ -180,14 +195,14 @@ local function StartUp()
 end
 
 local function ShutDown()
+    d("Shutdown minQ = " .. WellEater.settingsUser.minQuality)
+    d("Shutdown maxQ = " .. WellEater.settingsUser.maxQuality)
+    d(WellEater.AddonName .. " Timer cancelled")
     EVENT_MANAGER:UnregisterForUpdate(WellEater.AddonName .. "_TimersUpdate")
 end
 
-local function InitOnLoad(_, addonName)
-    if WellEater.AddonName ~= addonName then
-        return
-    end
-    EVENT_MANAGER:UnregisterForEvent(WellEater.AddonName, EVENT_ADD_ON_LOADED)
+local function OnSettingsClosed()
+    ShutDown()
     StartUp()
 end
 
@@ -202,60 +217,97 @@ local function OnUIError(_,errorString)
     end
 end
 
--- Settings initialization
-WellEater.settingsUser = ZO_SavedVars:NewCharacterIdSettings( "WellEater_Settings",
-        WellEater.WELLEATER_SAVED_VERSION,
-        "general",
-        NAMESPACE.settingsDefaults)
+local function InitOnLoad(_, addonName)
+    if WellEater.AddonName ~= addonName then
+        return
+    end
+
+    EVENT_MANAGER:UnregisterForEvent(WellEater.AddonName, EVENT_ADD_ON_LOADED)
+    -- Settings initialization
+    WellEater.settingsUser = ZO_SavedVars:NewCharacterIdSettings( "WellEater_Settings",
+            WellEater.WELLEATER_SAVED_VERSION,
+            "general",
+            NAMESPACE.settingsDefaults)
+
+    EVENT_MANAGER:RegisterForEvent(
+            WellEater.AddonName,
+            EVENT_PLAYER_COMBAT_STATE,
+            function(_, arg)
+
+                if not WellEater:isAddonEnabled() then
+                    return
+                end
+
+                if not arg then
+                    d(WellEater.AddonName .. " Combat exited")
+                    StartUp()
+                else
+                    d(WellEater.AddonName .. " Combat entered")
+                    ShutDown()
+                end
+            end
+    )
+
+
+    EVENT_MANAGER:RegisterForEvent(
+            WellEater.AddonName,
+            EVENT_PLAYER_DEAD,
+            function()
+                if not WellEater:isAddonEnabled() then
+                    return
+                end
+                d(WellEater.AddonName .. " Dead")
+                ShutDown()
+            end
+    )
+
+    EVENT_MANAGER:RegisterForEvent(
+            WellEater.AddonName,
+            EVENT_PLAYER_ALIVE,
+            function()
+                if not WellEater:isAddonEnabled() then
+                    return
+                end
+                d(WellEater.AddonName .. " Alive")
+                StartUp()
+            end
+    )
+
+    EVENT_MANAGER:RegisterForEvent(
+            WellEater.AddonName,
+            EVENT_PLAYER_SWIMMING,
+            function()
+                if not WellEater:isAddonEnabled() then
+                    return
+                end
+                d(WellEater.AddonName .. " Swim enter")
+                ShutDown()
+            end
+    )
+
+    EVENT_MANAGER:RegisterForEvent(
+            WellEater.AddonName,
+            EVENT_PLAYER_NOT_SWIMMING,
+            function()
+                if not WellEater:isAddonEnabled() then
+                    return
+                end
+
+                d(WellEater.AddonName .. " Swim exit")
+                StartUp()
+            end
+    )
+
+    EVENT_MANAGER:RegisterForEvent(WellEater.AddonName, EVENT_LUA_ERROR, OnUIError)
+
+    local lamPanel = WellEater:InitSettingsMenu()
+    lamPanel:SetHandler("OnEffectivelyHidden", OnSettingsClosed)
+    StartUp()
+end
 
 -- Init Hook --
 EVENT_MANAGER:RegisterForEvent(
         WellEater.AddonName, EVENT_ADD_ON_LOADED, InitOnLoad)
 
-EVENT_MANAGER:RegisterForEvent(
-        WellEater.AddonName,
-        EVENT_PLAYER_COMBAT_STATE,
-        function(_, arg)
-
-            if not WellEater:isAddonEnabled() then
-                return
-            end
-
-            if not arg then
-                d(WellEater.AddonName .. " Combat exited")
-                StartUp()
-            else
-                d(WellEater.AddonName .. " Combat entered")
-                ShutDown()
-            end
-        end
-)
-
-EVENT_MANAGER:RegisterForEvent(
-        WellEater.AddonName,
-        EVENT_PLAYER_SWIMMING,
-        function()
-            if not WellEater:isAddonEnabled() then
-                return
-            end
-            d(WellEater.AddonName .. " Swim enter")
-            ShutDown()
-        end
-)
-
-EVENT_MANAGER:RegisterForEvent(
-        WellEater.AddonName,
-        EVENT_PLAYER_NOT_SWIMMING,
-        function()
-            if not WellEater:isAddonEnabled() then
-                return
-            end
-
-            d(WellEater.AddonName .. " Swim exit")
-            StartUp()
-        end
-)
-
-EVENT_MANAGER:RegisterForEvent(WellEater.AddonName, EVENT_LUA_ERROR, OnUIError)
 
 
