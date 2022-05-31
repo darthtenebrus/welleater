@@ -75,6 +75,11 @@ NAMESPACE.blackList = {
     [89683] = true, -- erhöhter Erfahrungsgewinn
     [91369] = true, -- erhöhter Erfahrungsgewinn der Narrenpastete
 }
+
+NAMESPACE.skillUpItems = {
+    [64221] = true   -- Амброзия Псиджиков
+}
+
 -- local functions
 local function getActiveFoodBuff(abilityId)
     if NAMESPACE.blackList[abilityId] then
@@ -105,6 +110,10 @@ local function tryToUseItem(bagId, slotId)
     end
 end
 
+local function SkillUpItem(itemId)
+    return NAMESPACE.skillUpItems[itemId]
+end
+
 local function processAutoEat()
     if not WellEater:prepareToAnalize() then
         return
@@ -123,7 +132,8 @@ local function processAutoEat()
         local slotId = itemInfo.slotIndex
         if not itemInfo.stolen then
             local itemType, specialType = GetItemType(bagId, slotId)
-            if itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK then
+            local itemId = GetItemId(bagId, slotId)
+            if (itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK) and not SkillUpItem(itemId) then
                 local icon, stack, sellPrice, meetsUsageRequirement, locked, equipType, itemStyleId, quality = GetItemInfo(bagId, slotId)
 
                 local maxItemQ = WellEater:getUserPreference("maxQuality")
