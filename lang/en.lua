@@ -8,6 +8,11 @@ local L = {
     foodBlue = "Excellent (blue)",
     foodCyan = "Artifact (cyan)",
     foodGold = "Legendary (gold)",
+
+    timerSetupHeader = "Inventory Scan Timer",
+    timerSetupLabel = "Scan period, ms",
+    timerSetupLabel_TT = "How often the inventory is scanned for food. The more the better but more probably " ..
+            "you can run out of food for a long time in critical situation",
 }
 
 function WellEater:getLocale()

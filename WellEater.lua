@@ -57,7 +57,7 @@ function WellEater:prepareToAnalize()
     return self:isAddonEnabled() and not IsUnitInCombat("player")
             and not IsUnitSwimming("player") and not IsUnitDead("player")
 end
--- local functions
+
 
 -- Raid Notifier algorithm. Thanx memus
 NAMESPACE.blackList = {
@@ -75,7 +75,7 @@ NAMESPACE.blackList = {
     [89683] = true, -- erhöhter Erfahrungsgewinn
     [91369] = true, -- erhöhter Erfahrungsgewinn der Narrenpastete
 }
-
+-- local functions
 local function getActiveFoodBuff(abilityId)
     if NAMESPACE.blackList[abilityId] then
         return false
@@ -195,16 +195,12 @@ local function StartUp()
 end
 
 local function ShutDown()
-    d("Shutdown minQ = " .. WellEater.settingsUser.minQuality)
-    d("Shutdown maxQ = " .. WellEater.settingsUser.maxQuality)
+    d(WellEater.AddonName .. " Shutdown minQ = " .. WellEater.settingsUser.minQuality)
+    d(WellEater.AddonName .. " Shutdown maxQ = " .. WellEater.settingsUser.maxQuality)
     d(WellEater.AddonName .. " Timer cancelled")
     EVENT_MANAGER:UnregisterForUpdate(WellEater.AddonName .. "_TimersUpdate")
 end
 
-local function OnSettingsClosed()
-    ShutDown()
-    StartUp()
-end
 
 local function OnUIError(_,errorString)
     --Hide some bugs
@@ -298,12 +294,48 @@ local function InitOnLoad(_, addonName)
             end
     )
 
+    -- EVENT_PLAYER_ACTIVATED
+    EVENT_MANAGER:RegisterForEvent(
+            WellEater.AddonName,
+            EVENT_PLAYER_ACTIVATED,
+            function(_,initial)
+                if initial then
+                    if not WellEater:isAddonEnabled() then
+                        return
+                    end
+
+                    d(WellEater.AddonName .. " Active")
+                    StartUp()
+                end
+            end
+    )
+
+-- EVENT_PLAYER_DEACTIVATED
+    EVENT_MANAGER:RegisterForEvent(
+            WellEater.AddonName,
+            EVENT_PLAYER_DEACTIVATED,
+            function()
+                if not WellEater:isAddonEnabled() then
+                    return
+                end
+                d(WellEater.AddonName .. " Inactive")
+                ShutDown()
+            end
+    )
+
     EVENT_MANAGER:RegisterForEvent(WellEater.AddonName, EVENT_LUA_ERROR, OnUIError)
 
-    local lamPanel = WellEater:InitSettingsMenu()
-    lamPanel:SetHandler("OnEffectivelyHidden", OnSettingsClosed)
+    -- local lamPanel =
+    WellEater:initSettingsMenu()
+    -- lamPanel:SetHandler("OnEffectivelyHidden", OnSettingsClosed)
+end
+
+-- @static global only
+function WellEater.InterfaceHook_OnTimerSlider()
+    ShutDown()
     StartUp()
 end
+
 
 -- Init Hook --
 EVENT_MANAGER:RegisterForEvent(

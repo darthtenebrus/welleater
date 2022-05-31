@@ -1,6 +1,6 @@
 WellEater = WellEater or {}
 
-function WellEater:InitSettingsMenu()
+function WellEater:initSettingsMenu()
 
     local L = self:getLocale()
     local LAM = LibAddonMenu2
@@ -41,6 +41,8 @@ function WellEater:InitSettingsMenu()
             end
             if not data.setFunc then
                 data.setFunc = function(value)
+                    d("New value of" .. data.key .. " is")
+		    d(value)
                     self:setUserPreference(data.key, value)
                 end
             end
@@ -66,6 +68,26 @@ function WellEater:InitSettingsMenu()
         type = "description",
         text = L.generalSetupDescription,
     })
+
+    MakeControlEntry({
+        type = "header",
+        name = L.timerSetupHeader,
+    })
+
+    MakeControlEntry({
+        type = "slider",
+        name = L.timerSetupLabel,
+        tooltip = L.timerSetupLabel_TT,
+        setFunc = function(value)
+                    d("New value of updayeYime is")
+                    d(value)
+
+            self:setUserPreference("updateTime", value)
+            self.InterfaceHook_OnTimerSlider()
+        end,
+        min = 1000, max = 3000, step = 100,
+        noAlert = true,
+    }, "general", "updateTime")
 
     MakeControlEntry({
         type = "header",
@@ -108,9 +130,10 @@ function WellEater:InitSettingsMenu()
         noAlert = true,
     }, "general", "maxQuality")
 
-    self.optionsData = optionsTable
 
-    local myLAMAddonPanel = LAM:RegisterAddonPanel(self:getAddonName() .. "_Settings_Panel", self.panelData)
+    self.optionsData = optionsTable
+    -- local myLAMAddonPanel =
+    LAM:RegisterAddonPanel(self:getAddonName() .. "_Settings_Panel", self.panelData)
     LAM:RegisterOptionControls(self:getAddonName() .. "_Settings_Panel", self.optionsData)
-    return myLAMAddonPanel
+    -- return myLAMAddonPanel
 end
