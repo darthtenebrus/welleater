@@ -8,8 +8,8 @@ local L = {
         [ITEM_QUALITY_ARTIFACT] = "Episch (lila)",
         [ITEM_QUALITY_LEGENDARY] = "Legendär (gold)",
     },
-    timerSetupHeader = "Abfragezeitmeter für den Zeichenstatus",
-    timerSetupLabel = "Zeitintervall, мс",
+    timerSetupHeader = "Abfragezeitmeter für den Charakterstatus",
+    timerSetupLabel = "Zeitintervall, ms",
     timerSetupLabel_TT = "Wie oft der Charakterzustand auf Nahrungsbuffs gescannt wird" .. "Höherer Wert gibt eine" ..
             " weniger Belastung, aber eher eine" ..
             " Weile ohne Nahrung in einer kritischen Situation",
