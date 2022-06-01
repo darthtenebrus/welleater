@@ -84,7 +84,11 @@ NAMESPACE.blackList = {
 }
 
 NAMESPACE.skillUpItems = {
-    [64221] = true   -- Амброзия Псиджиков
+    [64221] = true,   -- Psijic Ambrosia
+    [64266] = true,   -- Brain Broth
+    [115027] = true,  -- Mythic Aetherial Ambrosia
+    [120076] = true,   -- Aetherial Ambrosia
+
 }
 
 -- local functions
@@ -252,10 +256,10 @@ local function InitOnLoad(_, addonName)
                 end
 
                 if not arg then
-                    d(WellEater.AddonName .. " Combat exited")
+                    --d(WellEater.AddonName .. " Combat exited")
                     StartUp()
                 else
-                    d(WellEater.AddonName .. " Combat entered")
+                    --d(WellEater.AddonName .. " Combat entered")
                     ShutDown()
                 end
             end
@@ -281,7 +285,7 @@ local function InitOnLoad(_, addonName)
                 if not WellEater:isAddonEnabled() then
                     return
                 end
-                d(WellEater.AddonName .. " Alive")
+                --d(WellEater.AddonName .. " Alive")
                 StartUp()
             end
     )
