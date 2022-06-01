@@ -194,7 +194,7 @@ local function TimersUpdate()
         end
     end
     if not haveFood then
-        d(WellEater.AddonName .. " Time To Eat")
+        --d(WellEater.AddonName .. " Time To Eat")
         processAutoEat()
     end
 
@@ -205,7 +205,7 @@ local function StartUp()
         return
     end
 
-    d(WellEater.AddonName .. " Timer Started")
+    --d(WellEater.AddonName .. " Timer Started")
     local upTime = WellEater:getUserPreference("updateTime")
     if upTime then
         EVENT_MANAGER:RegisterForUpdate(WellEater.AddonName .. "_TimersUpdate", upTime, TimersUpdate)
@@ -214,7 +214,7 @@ local function StartUp()
 end
 
 local function ShutDown()
-    d(WellEater.AddonName .. " Timer cancelled")
+    --d(WellEater.AddonName .. " Timer cancelled")
     EVENT_MANAGER:UnregisterForUpdate(WellEater.AddonName .. "_TimersUpdate")
 end
 
@@ -269,7 +269,7 @@ local function InitOnLoad(_, addonName)
                 if not WellEater:isAddonEnabled() then
                     return
                 end
-                d(WellEater.AddonName .. " Dead")
+                --d(WellEater.AddonName .. " Dead")
                 ShutDown()
             end
     )
@@ -293,7 +293,7 @@ local function InitOnLoad(_, addonName)
                 if not WellEater:isAddonEnabled() then
                     return
                 end
-                d(WellEater.AddonName .. " Swim enter")
+                --d(WellEater.AddonName .. " Swim enter")
                 ShutDown()
             end
     )
@@ -306,7 +306,7 @@ local function InitOnLoad(_, addonName)
                     return
                 end
 
-                d(WellEater.AddonName .. " Swim exit")
+                --d(WellEater.AddonName .. " Swim exit")
                 StartUp()
             end
     )
@@ -321,7 +321,7 @@ local function InitOnLoad(_, addonName)
                         return
                     end
 
-                    d(WellEater.AddonName .. " Active")
+                    --d(WellEater.AddonName .. " Active")
                     StartUp()
                 end
             end
@@ -335,7 +335,7 @@ local function InitOnLoad(_, addonName)
                 if not WellEater:isAddonEnabled() then
                     return
                 end
-                d(WellEater.AddonName .. " Inactive")
+                --d(WellEater.AddonName .. " Inactive")
                 ShutDown()
             end
     )
