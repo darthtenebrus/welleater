@@ -12,6 +12,7 @@ NAMESPACE.settingsDefaults = {
     [ITEM_QUALITY_ARCANE] = true,
     [ITEM_QUALITY_ARTIFACT] = false,
     [ITEM_QUALITY_LEGENDARY] = false,
+    notifyToScreen = true,
 }
 
 function WellEater:getAddonName()
@@ -154,10 +155,12 @@ local function processAutoEat()
                         local formattedName = zo_strformat(locale.youEat, GetItemLinkName(itemLink)) -- no control codes
 
                         if formattedName and abilityDescription then
-                            --d("Name = " .. formattedName)
-                            --d("Description = " .. abilityDescription)
-                            WellEaterIndicator:SetHidden(false)
-                            WellEaterIndicatorLabel:SetText(formattedName)
+                            local toScreen = locSettings.notifyToScreen
+                            if toScreen then
+                                WellEaterIndicator:SetHidden(false)
+                                WellEaterIndicatorLabel:SetText(formattedName)
+                            end
+                            d(WellEater.AddonName .. formattedName)
                         end
 
                         tryToUseItem(bagId, slotId)

@@ -85,10 +85,6 @@ function WellEater:initSettingsMenu()
         noAlert = true,
     }, "general", "updateTime")
 
-    MakeControlEntry({
-        type = "header",
-        name = L.generalSetupHeader,
-    })
 
     MakeControlEntry({
         type = "header",
@@ -102,6 +98,17 @@ function WellEater:initSettingsMenu()
             tooltip = L.foods[i],
         }, "general", i)
     end
+
+    MakeControlEntry({
+        type = "header",
+        name = L.outputSetupHeader,
+    })
+
+    MakeControlEntry({
+        type = "checkbox",
+        name = L.outputOnScreen,
+        tooltip = L.outputSetupHeader_TT,
+    }, "general", "notifyToScreen")
 
     self.optionsData = optionsTable
     -- local myLAMAddonPanel =

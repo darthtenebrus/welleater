@@ -1,8 +1,7 @@
 WellEater = WellEater or {}
 local L = {
-    generalSetupHeader = "Food search criteria to scan your inventory",
     generalSetupDescription = "Auto eat your preferred meals provided by your inventory after food or drink buff expiration",
-    foodQualityHeader = "Food Quality",
+    foodQualityHeader = "Quality Of Food to search",
     foods = {
         [ITEM_QUALITY_MAGIC] = "Normal (green)",
         [ITEM_QUALITY_ARCANE] = "Excellent (blue)",
@@ -15,6 +14,9 @@ local L = {
             "you can run out of food for a long time in critical situation",
 
     youEat = "You have eaten <<1>>",
+    outputSetupHeader = "Meal Eaten Notification Output",
+    outputOnScreen = "On screen",
+    outputSetupHeader_TT = "When on the notification about the meal eaten is written to the screen not only to the debug log",
 }
 
 function WellEater:getLocale()

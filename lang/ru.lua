@@ -1,8 +1,7 @@
 WellEater = WellEater or {}
 local L = {
-    generalSetupHeader = "Критерии поиска еды в инвентаре",
     generalSetupDescription = "После истечения времени эффектов, которые дает еда, позволяет автоматически съесть найденное в инвентаре блюдо",
-    foodQualityHeader = "Качество еды",
+    foodQualityHeader = "Качество искомой еды",
     foods = {
         [ITEM_QUALITY_MAGIC] = "Хорошее (зеленое)",
         [ITEM_QUALITY_ARCANE] = "Превосходное (синее)",
@@ -16,6 +15,11 @@ local L = {
     " в критической ситуации",
 
     youEat = "Вы съели: <<1>>",
+    outputSetupHeader = "Вывод сообщения о съеденном блюде",
+    outputOnScreen = "На экран",
+    outputSetupHeader_TT = "При включенной настройке сообщение о съеденном блюде будет выведено на экран, а не только" ..
+            " в лог отладки",
+
 }
 
 function WellEater:getLocale()
