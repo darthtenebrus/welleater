@@ -7,8 +7,9 @@
 ## DependsOn: LibAddonMenu-2.0>=28
 
 WellEater.lua
-WellEater.xml
 UI.lua
+WellEater.xml
+
 lang/en.lua
 lang/$(language).lua
 
