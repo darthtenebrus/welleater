@@ -18,7 +18,7 @@ function WellEater:initSettingsMenu()
             if data.choices and not data.choicesValues then
                 data.choicesValues = {}
                 for i=1, #data.choices do
-                    tinsert(data.choicesValues, i-1)
+                    table.insert(data.choicesValues, i-1)
                 end
             end
 
@@ -41,8 +41,6 @@ function WellEater:initSettingsMenu()
             end
             if not data.setFunc then
                 data.setFunc = function(value)
-                    d("New value of" .. data.key .. " is")
-		    d(value)
                     self:setUserPreference(data.key, value)
                 end
             end
@@ -79,8 +77,6 @@ function WellEater:initSettingsMenu()
         name = L.timerSetupLabel,
         tooltip = L.timerSetupLabel_TT,
         setFunc = function(value)
-                    d("New value of updayeYime is")
-                    d(value)
 
             self:setUserPreference("updateTime", value)
             self.InterfaceHook_OnTimerSlider()
@@ -95,41 +91,17 @@ function WellEater:initSettingsMenu()
     })
 
     MakeControlEntry({
-        type = "dropdown",
-        name = L.foodQualityMinHeader,
-        tooltip = L.foodQualityMinHeader,
-        choices = {
-            L.foodGreen,
-            L.foodBlue,
-            L.foodCyan,
-            L.foodGold
-        }, choicesValues = {
-            ITEM_QUALITY_MAGIC,
-            ITEM_QUALITY_ARCANE,
-            ITEM_QUALITY_ARTIFACT,
-            ITEM_QUALITY_LEGENDARY
-        },
-        noAlert = true,
-    }, "general", "minQuality")
+        type = "header",
+        name = L.foodQualityHeader,
+    })
 
-    MakeControlEntry({
-        type = "dropdown",
-        name = L.foodQualityMaxHeader,
-        tooltip = L.foodQualityMaxHeader,
-        choices = {
-            L.foodGreen,
-            L.foodBlue,
-            L.foodCyan,
-            L.foodGold
-        }, choicesValues = {
-            ITEM_QUALITY_MAGIC,
-            ITEM_QUALITY_ARCANE,
-            ITEM_QUALITY_ARTIFACT,
-            ITEM_QUALITY_LEGENDARY
-        },
-        noAlert = true,
-    }, "general", "maxQuality")
-
+    for i = ITEM_QUALITY_MAGIC, ITEM_QUALITY_LEGENDARY do
+        MakeControlEntry({
+            type = "checkbox",
+            name = L.foods[i],
+            tooltip = L.foods[i],
+        }, "general", i)
+    end
 
     self.optionsData = optionsTable
     -- local myLAMAddonPanel =

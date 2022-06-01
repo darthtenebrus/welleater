@@ -8,8 +8,10 @@ local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
     enabled = true,
     updateTime = 2000,
-    maxQuality = ITEM_QUALITY_ARCANE,
-    minQuality = ITEM_QUALITY_ARCANE
+    [ITEM_QUALITY_MAGIC] = false,
+    [ITEM_QUALITY_ARCANE] = true,
+    [ITEM_QUALITY_ARTIFACT] = false,
+    [ITEM_QUALITY_LEGENDARY] = false,
 }
 
 function WellEater:getAddonName()
@@ -31,6 +33,10 @@ end
 
 function WellEater:getUserPreference(setting)
     return self.settingsUser and self.settingsUser[setting]
+end
+
+function WellEater:getAllUserPreferences()
+    return self.settingsUser
 end
 
 function WellEater:getUserDefault(setting)
@@ -129,6 +135,7 @@ local function processAutoEat()
     end
 
     for _, itemInfo in pairs(bagCache) do
+        local locSettings = WellEater:getAllUserPreferences()
         local slotId = itemInfo.slotIndex
         if not itemInfo.stolen then
             local itemType, specialType = GetItemType(bagId, slotId)
@@ -136,22 +143,21 @@ local function processAutoEat()
             if (itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK) and not SkillUpItem(itemId) then
                 local icon, stack, sellPrice, meetsUsageRequirement, locked, equipType, itemStyleId, quality = GetItemInfo(bagId, slotId)
 
-                local maxItemQ = WellEater:getUserPreference("maxQuality")
-                local minItemQ = WellEater:getUserPreference("minQuality")
-                if meetsUsageRequirement and maxItemQ and maxItemQ >= quality
-                    and minItemQ and minItemQ <= quality then
+                if meetsUsageRequirement and locSettings and locSettings[quality] then
 
                     local usable, onlyFromActionSlot = IsItemUsable(bagId, slotId)
                     if usable and not onlyFromActionSlot then
 
                         local itemLink = GetItemLink(bagId, slotId)
                         local hasAbility,abilityHeader,abilityDescription = GetItemLinkOnUseAbilityInfo(itemLink)
-
-                        local formattedName = zo_strformat("<<1>>", GetItemLinkName(itemLink)) -- no control codes
+                        local locale = WellEater:getLocale()
+                        local formattedName = zo_strformat(locale.youEat, GetItemLinkName(itemLink)) -- no control codes
 
                         if formattedName and abilityDescription then
-                            d("Name = " .. formattedName)
-                            d("Description = " .. abilityDescription)
+                            --d("Name = " .. formattedName)
+                            --d("Description = " .. abilityDescription)
+                            WellEaterIndicator:SetHidden(false)
+                            WellEaterIndicatorLabel:SetText(formattedName)
                         end
 
                         tryToUseItem(bagId, slotId)
@@ -165,7 +171,6 @@ local function processAutoEat()
 end
 
 local function TimersUpdate()
-
     if not WellEater:prepareToAnalize() then
         return
     end
@@ -181,6 +186,7 @@ local function TimersUpdate()
         foodQuantity = timeEnding * 1000 - now
         haveFood = (bFood and (foodQuantity > 0))
         if haveFood then
+            WellEaterIndicator:SetHidden(true)
             break
         end
     end
@@ -205,8 +211,6 @@ local function StartUp()
 end
 
 local function ShutDown()
-    d(WellEater.AddonName .. " Shutdown minQ = " .. WellEater.settingsUser.minQuality)
-    d(WellEater.AddonName .. " Shutdown maxQ = " .. WellEater.settingsUser.maxQuality)
     d(WellEater.AddonName .. " Timer cancelled")
     EVENT_MANAGER:UnregisterForUpdate(WellEater.AddonName .. "_TimersUpdate")
 end
