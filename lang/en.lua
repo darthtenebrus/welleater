@@ -2,6 +2,7 @@ WellEater = WellEater or {}
 local L = {
     generalSetupDescription = "Auto eat your preferred meals provided by your inventory after food or drink buff expiration",
     foodQualityHeader = "Quality of food to search",
+    foodQualityDescription = "Allows to choose the quality of the food",
     foods = {
         [ITEM_QUALITY_MAGIC] = "Normal (green)",
         [ITEM_QUALITY_ARCANE] = "Excellent (blue)",
@@ -17,6 +18,14 @@ local L = {
     outputSetupHeader = "Meal eaten notification output",
     outputOnScreen = "On screen",
     outputSetupHeader_TT = "When on the notification about the meal eaten is written to the screen not only to the debug log",
+
+    mealSetupHeader = "Kind of meal to use",
+    mealSetupDescription = "What kind of meal to use: food or drink. WARNING If both are off then" ..
+        " there will be no choice made, that is the same as the addon is disabled. Leave at least one on",
+
+    mealSetupFood = "Food",
+    mealSetupDrink = "Drink",
+
 }
 
 function WellEater:getLocale()

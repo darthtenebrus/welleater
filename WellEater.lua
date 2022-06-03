@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.0.0"
+WellEater.Version = "1.0.1"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -13,6 +13,8 @@ NAMESPACE.settingsDefaults = {
     [ITEM_QUALITY_ARTIFACT] = false,
     [ITEM_QUALITY_LEGENDARY] = false,
     notifyToScreen = true,
+    useFood = true,
+    useDrink = true,
 }
 
 function WellEater:getAddonName()
@@ -141,11 +143,15 @@ local function processAutoEat()
 
     for _, itemInfo in pairs(bagCache) do
         local locSettings = WellEater:getAllUserPreferences()
+        local useFood = locSettings.useFood
+        local useDrink = locSettings.useDrink
         local slotId = itemInfo.slotIndex
         if not itemInfo.stolen then
             local itemType, specialType = GetItemType(bagId, slotId)
             local itemId = GetItemId(bagId, slotId)
-            if (itemType == ITEMTYPE_FOOD or itemType == ITEMTYPE_DRINK) and not SkillUpItem(itemId) then
+            if ((useFood and itemType == ITEMTYPE_FOOD) or
+                    (useDrink and itemType == ITEMTYPE_DRINK)) and
+                    not SkillUpItem(itemId) then
                 local icon, stack, sellPrice, meetsUsageRequirement, locked, equipType, itemStyleId, quality = GetItemInfo(bagId, slotId)
 
                 if meetsUsageRequirement and locSettings and locSettings[quality] then
@@ -161,6 +167,7 @@ local function processAutoEat()
                         if formattedName and abilityDescription then
                             local toScreen = locSettings.notifyToScreen
                             if toScreen then
+                                WellEater.AnimIn:PlayFromStart()
                                 WellEaterIndicator:SetHidden(false)
                                 WellEaterIndicatorLabel:SetText(formattedName)
                             end
@@ -193,6 +200,7 @@ local function TimersUpdate()
         foodQuantity = timeEnding * 1000 - now
         haveFood = (bFood and (foodQuantity > 0))
         if haveFood then
+            WellEater.AnimOut:PlayFromStart()
             WellEaterIndicator:SetHidden(true)
             break
         end
@@ -348,6 +356,11 @@ local function InitOnLoad(_, addonName)
 
     -- local lamPanel =
     WellEater:initSettingsMenu()
+    WellEater.AnimIn = ANIMATION_MANAGER:CreateTimelineFromVirtual(
+            "WellEaterAnnounceFadeIn", WellEaterIndicatorLabel)
+    WellEater.AnimOut = ANIMATION_MANAGER:CreateTimelineFromVirtual(
+            "WellEaterAnnounceFadeOut", WellEaterIndicatorLabel)
+
     -- lamPanel:SetHandler("OnEffectivelyHidden", OnSettingsClosed)
 end
 

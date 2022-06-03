@@ -1,7 +1,8 @@
 WellEater = WellEater or {}
 local L = {
-    generalSetupDescription = "Lässt es Ihnen nach der Wirkzeit von dem Essen im Inventar gefundene Gericht automatisch essen",
+    generalSetupDescription = "Lässt es Ihnen, nach die Essen- oder Trinken-Bufffs auslaufen, im Inventar gefundene Gericht automatisch essen",
     foodQualityHeader = "Die Qualität der suchenden Lebensmittel",
+    foodQualityDescription = "Lasst die Qualität der Lebensmittel auswahlen",
     foods = {
         [ITEM_QUALITY_MAGIC] = "Gut (grün)",
         [ITEM_QUALITY_ARCANE] = "Ausgezeichnet (blau)",
@@ -19,6 +20,14 @@ local L = {
     outputOnScreen = "Auf den Bildschirm",
     outputSetupHeader_TT = "Wenn die Einstellung aktiviert ist, wird eine Nachricht über das gegessene Gericht" ..
             " auf dem Bildschirm angezeigt, und nicht nur zum Debug-Log",
+
+    mealSetupHeader = "Gerichtart",
+    mealSetupDescription = "Was zu verwenden: Essen oder Trinken. ACHTUNG Wenn die Beide ausgeschaltet sind," ..
+            " dann wird kein Essen verwendet, denn ist es egal, der Addon ausgeschaltet wird. Schalten Sie mindestens" ..
+            " einen ein",
+
+    mealSetupFood = "Essen",
+    mealSetupDrink = "Trinken",
 
 }
 

@@ -1,11 +1,23 @@
 <GuiXml>
+    <Animations>
+        <AnimationTimeline name="WellEaterAnnounceFadeIn">
+            <Animations>
+                <AlphaAnimation duration="500" startAlpha="0" endAlpha="1" />
+            </Animations>
+        </AnimationTimeline>
+        <AnimationTimeline name="WellEaterAnnounceFadeOut">
+            <Animations>
+                <AlphaAnimation duration="500" startAlpha="1" endAlpha="0" />
+            </Animations>
+        </AnimationTimeline>
+
+    </Animations>
     <Controls>
         <TopLevelControl name="WellEaterIndicator">
             <Dimensions x="200" y="25" />
             <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
-
             <Controls>
-                <Label name="$(parent)Label" width="300" height="40" font="ZoFontWinH4" inheritAlpha="true" color="FFFFFF"
+                <Label name="$(parent)Label" width="300" height="40" font="ZoFontWinH2" inheritAlpha="true" color="FFFFFF"
                     wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER">
                     <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
                 </Label>

@@ -7,7 +7,7 @@ function WellEater:initSettingsMenu()
     local optionsTable = {}
     local index = 0
 
-    local function MakeControlEntry(data, category, key)
+    local function MakeControlEntry(optTable, data, category, key)
 
         if (category and key) then
             -- for the majority of the settings
@@ -48,8 +48,27 @@ function WellEater:initSettingsMenu()
         end
 
         -- add to appropriate table
-        table.insert(optionsTable, data)
+        table.insert(optTable, data)
+        return optTable
 
+    end
+
+    local function MakeSubmenu(optTable, title, description)
+        local subTable = {}
+        MakeControlEntry(optTable,{
+            type = "submenu",
+            name = title,
+            controls = subTable,
+        })
+        MakeControlEntry(subTable, {
+            type = "description",
+            text = description,
+        })
+        MakeControlEntry(subTable,{
+            type = "divider",
+            alpha = 1,
+        })
+        return subTable
     end
 
 
@@ -62,17 +81,17 @@ function WellEater:initSettingsMenu()
         registerForDefaults = true,
     }
 
-    MakeControlEntry({
+    MakeControlEntry(optionsTable,{
         type = "description",
         text = L.generalSetupDescription,
     })
 
-    MakeControlEntry({
+    MakeControlEntry(optionsTable,{
         type = "header",
         name = L.timerSetupHeader,
     })
 
-    MakeControlEntry({
+    MakeControlEntry(optionsTable,{
         type = "slider",
         name = L.timerSetupLabel,
         tooltip = L.timerSetupLabel_TT,
@@ -86,25 +105,36 @@ function WellEater:initSettingsMenu()
     }, "general", "updateTime")
 
 
-    MakeControlEntry({
-        type = "header",
-        name = L.foodQualityHeader,
-    })
+    local sTable = MakeSubmenu(optionsTable,L.mealSetupHeader, L.mealSetupDescription)
+
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.mealSetupFood,
+        tooltip = L.mealSetupFood,
+    }, "general", "useFood")
+
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.mealSetupDrink,
+        tooltip = L.mealSetupDrink,
+    }, "general", "useDrink")
+
+    sTable = MakeSubmenu(optionsTable,L.foodQualityHeader, L.foodQualityDescription)
 
     for i = ITEM_QUALITY_MAGIC, ITEM_QUALITY_LEGENDARY do
-        MakeControlEntry({
+        MakeControlEntry(sTable,{
             type = "checkbox",
             name = L.foods[i],
             tooltip = L.foods[i],
         }, "general", i)
     end
 
-    MakeControlEntry({
+    MakeControlEntry(optionsTable,{
         type = "header",
         name = L.outputSetupHeader,
     })
 
-    MakeControlEntry({
+    MakeControlEntry(optionsTable,{
         type = "checkbox",
         name = L.outputOnScreen,
         tooltip = L.outputSetupHeader_TT,
