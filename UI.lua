@@ -5,7 +5,6 @@ function WellEater:initSettingsMenu()
     local L = self:getLocale()
     local LAM = LibAddonMenu2
     local optionsTable = {}
-    local index = 0
 
     local function MakeControlEntry(optTable, data, category, key)
 
@@ -24,28 +23,25 @@ function WellEater:initSettingsMenu()
 
             -- setup default value
             if not data.default then
-                local default = self:getUserDefault(key)
+                local default = self:getUserDefault(key, category)
                 data.default = default
-            end
-
-            if not data.noAlert then
-                index = index + 1
-                data.reference = "WESettingCtrl"..index
             end
 
             -- add get/set functions if they were not provided
             if not data.getFunc then
                 data.getFunc = function()
-                    return self:getUserPreference(data.key)
+                    return self:getUserPreference(data.key, data.category)
                 end
             end
             if not data.setFunc then
                 data.setFunc = function(value)
-                    self:setUserPreference(data.key, value)
+                    self:setUserPreference(data.key, value, data.category)
                 end
             end
-
+            data.reference = "WESET_".. category .. "_".. key
         end
+
+
 
         -- add to appropriate table
         table.insert(optTable, data)
@@ -97,7 +93,7 @@ function WellEater:initSettingsMenu()
         tooltip = L.timerSetupLabel_TT,
         setFunc = function(value)
 
-            self:setUserPreference("updateTime", value)
+            self:setUserPreference("updateTime", value, "general")
             self.InterfaceHook_OnTimerSlider()
         end,
         min = 1000, max = 3000, step = 100,
@@ -128,6 +124,39 @@ function WellEater:initSettingsMenu()
             tooltip = L.foods[i],
         }, "general", i)
     end
+
+    sTable = MakeSubmenu(optionsTable,L.weaponSetupHeader, L.weaponSetupDescription)
+
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.weaponSetupEnchantMainHand,
+        tooltip = L.weaponSetupEnchantMainHand,
+    }, "slots", EQUIP_SLOT_MAIN_HAND)
+
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.weaponSetupEnchantOffHand,
+        tooltip = L.weaponSetupEnchantOffHand,
+    }, "slots", EQUIP_SLOT_OFF_HAND)
+
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.weaponSetupEnchantMainHandBack,
+        tooltip = L.weaponSetupEnchantMainHandBack,
+    }, "slots", EQUIP_SLOT_BACKUP_MAIN)
+
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.weaponSetupEnchantOffHandBack,
+        tooltip = L.weaponSetupEnchantOffHandBack,
+    }, "slots", EQUIP_SLOT_BACKUP_OFF)
+
+    MakeControlEntry(sTable,{
+        type = "slider",
+        name = L.minCharges,
+        tooltip = L.minCharges,
+        min = 50, max = 300, step = 10,
+    }, "general", "minCharges")
 
     MakeControlEntry(optionsTable,{
         type = "header",

@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.0.1"
+WellEater.Version = "1.0.2"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -15,7 +15,24 @@ NAMESPACE.settingsDefaults = {
     notifyToScreen = true,
     useFood = true,
     useDrink = true,
+    slots = {
+        [EQUIP_SLOT_MAIN_HAND] = true,
+        [EQUIP_SLOT_OFF_HAND] = true,
+        [EQUIP_SLOT_BACKUP_MAIN] = true,
+        [EQUIP_SLOT_BACKUP_OFF] = true,
+    },
+    minCharges = 300,
 }
+
+function WellEater:isWeaponCheckable()
+    local settings = self:getAllUserPreferences()
+    for _,val in ipairs(settings.slots) do
+        if val then
+            return true
+        end
+    end
+    return false
+end
 
 function WellEater:getAddonName()
     return self.AddonName
@@ -34,32 +51,41 @@ function WellEater:getAuthor()
     return self.Author
 end
 
-function WellEater:getUserPreference(setting)
-    return self.settingsUser and self.settingsUser[setting]
+function WellEater:getUserPreference(setting, categ)
+    if not categ or categ == "general" then
+        return self.settingsUser and self.settingsUser[setting]
+    else
+        return self.settingsUser and self.settingsUser[categ] and
+                self.settingsUser[categ][setting]
+    end
 end
 
 function WellEater:getAllUserPreferences()
     return self.settingsUser
 end
 
-function WellEater:getUserDefault(setting)
-    return NAMESPACE.settingsDefaults and NAMESPACE.settingsDefaults[setting]
+function WellEater:getUserDefault(setting, categ)
+    if not categ or categ == "general" then
+        return NAMESPACE.settingsDefaults and NAMESPACE.settingsDefaults[setting]
+    else
+        return NAMESPACE.settingsDefaults and NAMESPACE.settingsDefaults[categ] and
+                NAMESPACE.settingsDefaults[categ][setting]
+    end
 end
 
-function WellEater:setUserPreference(setting, value)
+function WellEater:setUserPreference(setting, value, categ)
     self.settingsUser = self.settingsUser or {}
-    self.settingsUser[setting] = value
+    if not categ or categ == "general" then
+        self.settingsUser[setting] = value
+    else
+        self.settingsUser[categ] = self.settingsUser[categ] or {}
+        self.settingsUser[categ][setting] = value
+    end
 
 end
 
 function WellEater:isAddonEnabled()
-
-    local locEnabled = self:getUserPreference("enabled")
-
-    if not locEnabled then
-        d(WellEater.AddonName .. " NOT enabled")
-    end
-    return locEnabled
+    return self:getUserPreference("enabled")
 end
 
 function WellEater:prepareToAnalize()
@@ -167,16 +193,66 @@ local function processAutoEat()
                         if formattedName and abilityDescription then
                             local toScreen = locSettings.notifyToScreen
                             if toScreen then
+                                WellEaterIndicatorLabel:SetText(formattedName)
                                 WellEater.AnimIn:PlayFromStart()
                                 WellEaterIndicator:SetHidden(false)
-                                WellEaterIndicatorLabel:SetText(formattedName)
                             end
-                            d(WellEater.AddonName .. formattedName)
+                            df("[%s] %s", WellEater.AddonName, formattedName)
                         end
 
                         tryToUseItem(bagId, slotId)
 
                         break
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function checkEquippedWeapon()
+    local bagC
+    local locSettings = WellEater:getAllUserPreferences()
+
+    if not WellEaterIndicatorWeaponLabel:IsHidden() then
+        WellEater.WeaponAnimOut:PlayFromStart()
+        WellEaterIndicatorWeaponLabel:SetHidden(true)
+    end
+
+    for testSlot,isToCheck in ipairs(locSettings.slots) do
+        if isToCheck and HasItemInSlot(BAG_WORN, testSlot)
+                and not IsLockedWeaponSlot(testSlot) then
+
+            local linkId = GetItemLink(BAG_WORN, testSlot)
+            local numCharges = GetItemLinkNumEnchantCharges(linkId)
+            if numCharges and numCharges <= locSettings.minCharges then
+                if not bagC then
+                    SHARED_INVENTORY:RefreshInventory(BAG_BACKPACK)
+                    bagC = SHARED_INVENTORY:GetOrCreateBagCache(BAG_BACKPACK)
+
+                    if not bagC or type(bagC) ~= "table" then
+                        return
+                    end
+                end
+
+                for _, itemInfo in pairs(bagC) do
+                    local slotId = itemInfo.slotIndex
+                    if not itemInfo.stolen then
+                        local itemType, specialType = GetItemType(BAG_BACKPACK, slotId)
+                        if itemType == ITEMTYPE_SOUL_GEM then
+                            ChargeItemWithSoulGem(BAG_WORN, testSlot, BAG_BACKPACK, slotId)
+                            local iName = GetItemLinkName(GetItemLink(BAG_WORN, testSlot))
+                            local locale = WellEater:getLocale()
+                            local formattedName = zo_strformat(locale.youCharge, iName) -- no control codes
+                            df("[%s] %s", WellEater.AddonName, formattedName)
+                            local toScreen = locSettings.notifyToScreen
+                            if toScreen then
+                                WellEaterIndicatorWeaponLabel:SetText(formattedName)
+                                WellEater.WeaponAnimIn:PlayFromStart()
+                                WellEaterIndicatorWeaponLabel:SetHidden(false)
+                            end
+                            break
+                        end
                     end
                 end
             end
@@ -198,16 +274,24 @@ local function TimersUpdate()
         _, _, timeEnding, _, _, _, _, _, _, _, abilityId, canClickOff = GetUnitBuffInfo("player", i)
         local bFood = (getActiveFoodBuff(abilityId) and canClickOff)
         foodQuantity = timeEnding * 1000 - now
+
         haveFood = (bFood and (foodQuantity > 0))
         if haveFood then
-            WellEater.AnimOut:PlayFromStart()
-            WellEaterIndicator:SetHidden(true)
+            if not WellEaterIndicator:IsHidden() then
+                WellEater.AnimOut:PlayFromStart()
+                WellEaterIndicator:SetHidden(true)
+            end
+            --d(WellEater.AddonName .. "fq = " .. foodQuantity)
             break
         end
     end
     if not haveFood then
         --d(WellEater.AddonName .. " Time To Eat")
         processAutoEat()
+    end
+
+    if WellEater:isWeaponCheckable() then
+        checkEquippedWeapon()
     end
 
 end
@@ -360,6 +444,11 @@ local function InitOnLoad(_, addonName)
             "WellEaterAnnounceFadeIn", WellEaterIndicatorLabel)
     WellEater.AnimOut = ANIMATION_MANAGER:CreateTimelineFromVirtual(
             "WellEaterAnnounceFadeOut", WellEaterIndicatorLabel)
+
+    WellEater.WeaponAnimIn = ANIMATION_MANAGER:CreateTimelineFromVirtual(
+            "WellEaterAnnounceFadeIn", WellEaterIndicatorWeaponLabel)
+    WellEater.WeaponAnimOut = ANIMATION_MANAGER:CreateTimelineFromVirtual(
+            "WellEaterAnnounceFadeOut", WellEaterIndicatorWeaponLabel)
 
     -- lamPanel:SetHandler("OnEffectivelyHidden", OnSettingsClosed)
 end

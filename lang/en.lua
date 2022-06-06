@@ -15,6 +15,7 @@ local L = {
             "you can run out of food for a long time in critical situation",
 
     youEat = "You have eaten <<1>>",
+    youCharge = "Charged <<1>>",
     outputSetupHeader = "Meal eaten notification output",
     outputOnScreen = "On screen",
     outputSetupHeader_TT = "When on the notification about the meal eaten is written to the screen not only to the debug log",
@@ -25,6 +26,15 @@ local L = {
 
     mealSetupFood = "Food",
     mealSetupDrink = "Drink",
+
+    weaponSetupHeader = "Weapon",
+    weaponSetupDescription = "Weapon auto enchanting will apply when number of charges decreases to minimum and if soul gem is in inventory",
+    weaponSetupEnchantMainHand = "Main hand weapon",
+    weaponSetupEnchantOffHand = "Off hand weapon",
+    weaponSetupEnchantMainHandBack = "Main hand weapon secondary",
+    weaponSetupEnchantOffHandBack = "Off hand weapon secondary",
+
+    minCharges = "Minimum number of charges",
 
 }
 

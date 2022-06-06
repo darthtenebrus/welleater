@@ -18,8 +18,12 @@
             <Anchor point="CENTER" relativeTo="GuiRoot" relativePoint="CENTER" />
             <Controls>
                 <Label name="$(parent)Label" width="300" height="40" font="ZoFontWinH2" inheritAlpha="true" color="FFFFFF"
-                    wrapMode="TRUNCATE" verticalAlignment="TOP" horizontalAlignment="CENTER">
+                    wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER">
                     <Anchor point="TOP" relativeTo="$(parent)" relativePoint="TOP" />
+                </Label>
+                <Label name="$(parent)WeaponLabel" width="300" height="40" font="ZoFontWinH2" inheritAlpha="true" color="FFFFFF"
+                    wrapMode="TRUNCATE" verticalAlignment="CENTER" horizontalAlignment="CENTER">
+                    <Anchor point="BOTTOM" relativeTo="$(parent)" relativePoint="BOTTOM" />
                 </Label>
             </Controls>
         </TopLevelControl>

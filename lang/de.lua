@@ -16,6 +16,7 @@ local L = {
             " Weile ohne Nahrung in einer kritischen Situation",
 
     youEat = "Sie haben <<1>> gegessen",
+    youCharge = "Eingeladen <<1>>",
     outputSetupHeader = "Anzeigen die Nachricht über das gegessene Gericht",
     outputOnScreen = "Auf den Bildschirm",
     outputSetupHeader_TT = "Wenn die Einstellung aktiviert ist, wird eine Nachricht über das gegessene Gericht" ..
@@ -28,6 +29,15 @@ local L = {
 
     mealSetupFood = "Essen",
     mealSetupDrink = "Trinken",
+
+    weaponSetupHeader = "Waffen",
+    weaponSetupDescription = "Es kommt Waffen Autoverzauberung vor, wenn die Gebühranzahl Minimal oder kleiner ist und" ..
+            " ein Seelenstein im Inventar vorliegt",
+    weaponSetupEnchantMainHand = "Haupthand Waffen",
+    weaponSetupEnchantOffHand = "Ergänzendhand Waffen",
+    weaponSetupEnchantMainHandBack = "Haupthand Waffen zweitrangig",
+    weaponSetupEnchantOffHandBack = "Ergänzendhand Waffen zweitrangig",
+    minCharges = "Minimalgebühranzahl",
 
 }
 

@@ -16,6 +16,7 @@ local L = {
     " в критической ситуации",
 
     youEat = "Вы съели: <<1>>",
+    youCharge = "Заряжено <<1>>",
     outputSetupHeader = "Вывод сообщения о съеденном блюде",
     outputOnScreen = "На экран",
     outputSetupHeader_TT = "При включенной настройке сообщение о съеденном блюде будет выведено на экран, а не только" ..
@@ -27,6 +28,16 @@ local L = {
 
     mealSetupFood = "Еда",
     mealSetupDrink = "Напиток",
+
+    weaponSetupHeader = "Оружие",
+    weaponSetupDescription = "Автоматическое зачарование оружия произойдёт при уменьшении количества зарядов до" ..
+            " минимального и наличии в инвентаре камня душ",
+    weaponSetupEnchantMainHand = "Оружие в основной руке",
+    weaponSetupEnchantOffHand = "Оружие в дополнительной руке",
+    weaponSetupEnchantMainHandBack = "Оружие в основной руке, вторая панель",
+    weaponSetupEnchantOffHandBack = "Оружие в дополнительной руке, вторая панель",
+
+    minCharges = "Минимальное количество зарядов",
 
 }
 
