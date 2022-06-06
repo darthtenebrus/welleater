@@ -26,7 +26,7 @@ NAMESPACE.settingsDefaults = {
 
 function WellEater:isWeaponCheckable()
     local settings = self:getAllUserPreferences()
-    for _,val in ipairs(settings.slots) do
+    for _,val in pairs(settings.slots) do
         if val then
             return true
         end
@@ -132,11 +132,11 @@ local function getActiveFoodBuff(abilityId)
                 or GetAbilityDuration(abilityId) < 600000 then
             return false
         end
-        local cost, mechanic = GetAbilityCost(abilityId)
+        local cost = GetAbilityCost(abilityId)
         local channeled, castTime = GetAbilityCastInfo(abilityId)
         local minRangeCM, maxRangeCM = GetAbilityRange(abilityId)
         local abilityDescription = GetAbilityDescription(abilityId)
-        return not (cost > 0 or mechanic > 0 or channeled or castTime > 0 or
+        return not (cost > 0 or channeled or castTime > 0 or
                 minRangeCM > 0 or maxRangeCM > 0 or abilityDescription == "")
     end
 end
@@ -214,17 +214,13 @@ local function checkEquippedWeapon()
     local bagC
     local locSettings = WellEater:getAllUserPreferences()
 
-    if not WellEaterIndicatorWeaponLabel:IsHidden() then
-        WellEater.WeaponAnimOut:PlayFromStart()
-        WellEaterIndicatorWeaponLabel:SetHidden(true)
-    end
-
-    for testSlot,isToCheck in ipairs(locSettings.slots) do
+    for testSlot,isToCheck in pairs(locSettings.slots) do
         if isToCheck and HasItemInSlot(BAG_WORN, testSlot)
                 and not IsLockedWeaponSlot(testSlot) then
-
             local linkId = GetItemLink(BAG_WORN, testSlot)
             local numCharges = GetItemLinkNumEnchantCharges(linkId)
+            --df("numCharges = %s", numCharges)
+
             if numCharges and numCharges <= locSettings.minCharges then
                 if not bagC then
                     SHARED_INVENTORY:RefreshInventory(BAG_BACKPACK)
@@ -249,7 +245,7 @@ local function checkEquippedWeapon()
                             if toScreen then
                                 WellEaterIndicatorWeaponLabel:SetText(formattedName)
                                 WellEater.WeaponAnimIn:PlayFromStart()
-                                WellEaterIndicatorWeaponLabel:SetHidden(false)
+                                WellEaterIndicator:SetHidden(false)
                             end
                             break
                         end
@@ -279,6 +275,7 @@ local function TimersUpdate()
         if haveFood then
             if not WellEaterIndicator:IsHidden() then
                 WellEater.AnimOut:PlayFromStart()
+                WellEater.WeaponAnimOut:PlayFromStart()
                 WellEaterIndicator:SetHidden(true)
             end
             --d(WellEater.AddonName .. "fq = " .. foodQuantity)
@@ -290,7 +287,8 @@ local function TimersUpdate()
         processAutoEat()
     end
 
-    if WellEater:isWeaponCheckable() then
+    local isCheckable = WellEater:isWeaponCheckable()
+    if isCheckable then
         checkEquippedWeapon()
     end
 
