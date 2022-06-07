@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.0.2"
+WellEater.Version = "1.0.3"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -120,6 +120,13 @@ NAMESPACE.skillUpItems = {
 }
 
 -- local functions
+
+local function hideOut()
+        WellEater.AnimOut:PlayFromStart()
+        WellEater.WeaponAnimOut:PlayFromStart()
+        WellEaterIndicator:SetHidden(true)
+end
+
 local function getActiveFoodBuff(abilityId)
     if NAMESPACE.blackList[abilityId] then
         return false
@@ -196,6 +203,8 @@ local function processAutoEat()
                                 WellEaterIndicatorLabel:SetText(formattedName)
                                 WellEater.AnimIn:PlayFromStart()
                                 WellEaterIndicator:SetHidden(false)
+                                zo_callLater(hideOut, 1000)
+
                             end
                             df("[%s] %s", WellEater.AddonName, formattedName)
                         end
@@ -246,6 +255,7 @@ local function checkEquippedWeapon()
                                 WellEaterIndicatorWeaponLabel:SetText(formattedName)
                                 WellEater.WeaponAnimIn:PlayFromStart()
                                 WellEaterIndicator:SetHidden(false)
+                                zo_callLater(hideOut, 1000)
                             end
                             break
                         end
@@ -273,11 +283,6 @@ local function TimersUpdate()
 
         haveFood = (bFood and (foodQuantity > 0))
         if haveFood then
-            if not WellEaterIndicator:IsHidden() then
-                WellEater.AnimOut:PlayFromStart()
-                WellEater.WeaponAnimOut:PlayFromStart()
-                WellEaterIndicator:SetHidden(true)
-            end
             --d(WellEater.AddonName .. "fq = " .. foodQuantity)
             break
         end
