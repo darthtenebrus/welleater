@@ -31,7 +31,7 @@ local L = {
     mealSetupDrink = "Trinken",
 
     weaponSetupHeader = "Waffen",
-    weaponSetupDescription = "Es kommt Waffen Autoverzauberung vor, wenn die Gebühranzahl Minimal oder kleiner ist und" ..
+    weaponSetupDescription = "Es kommt Autoeinladung der verzauberte Waffe vor, wenn die Gebühranzahl Minimal oder kleiner ist und" ..
             " ein Seelenstein im Inventar vorliegt",
     weaponSetupEnchantMainHand = "Haupthande Waffe",
     weaponSetupEnchantOffHand = "Ergänzendhande Waffe",
