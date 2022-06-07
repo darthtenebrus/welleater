@@ -26,7 +26,7 @@ NAMESPACE.settingsDefaults = {
 
 function WellEater:isWeaponCheckable()
     local settings = self:getAllUserPreferences()
-    for _,val in pairs(settings.slots) do
+    for _, val in pairs(settings.slots) do
         if val then
             return true
         end
@@ -41,7 +41,6 @@ end
 function WellEater:getDisplayName()
     return self.DisplayName
 end
-
 
 function WellEater:getVersion()
     return self.Version
@@ -112,19 +111,21 @@ NAMESPACE.blackList = {
 }
 
 NAMESPACE.skillUpItems = {
-    [64221] = true,   -- Psijic Ambrosia
-    [64266] = true,   -- Brain Broth
-    [115027] = true,  -- Mythic Aetherial Ambrosia
-    [120076] = true,   -- Aetherial Ambrosia
+    [64221] = true, -- Psijic Ambrosia
+    [64266] = true, -- Brain Broth
+    [115027] = true, -- Mythic Aetherial Ambrosia
+    [120076] = true, -- Aetherial Ambrosia
 
 }
 
 -- local functions
 
-local function hideOut()
-        WellEater.AnimOut:PlayFromStart()
-        WellEater.WeaponAnimOut:PlayFromStart()
+local function hideOut(control, animationOut)
+    animationOut:PlayFromStart()
+    zo_callLater(function()
+        control:SetText("")
         WellEaterIndicator:SetHidden(true)
+    end, 1000)
 end
 
 local function getActiveFoodBuff(abilityId)
@@ -193,17 +194,19 @@ local function processAutoEat()
                     if usable and not onlyFromActionSlot then
 
                         local itemLink = GetItemLink(bagId, slotId)
-                        local hasAbility,abilityHeader,abilityDescription = GetItemLinkOnUseAbilityInfo(itemLink)
+                        local hasAbility, abilityHeader, abilityDescription = GetItemLinkOnUseAbilityInfo(itemLink)
                         local locale = WellEater:getLocale()
                         local formattedName = zo_strformat(locale.youEat, GetItemLinkName(itemLink)) -- no control codes
 
                         if formattedName and abilityDescription then
                             local toScreen = locSettings.notifyToScreen
                             if toScreen then
-                                WellEaterIndicatorLabel:SetText(formattedName)
                                 WellEater.AnimIn:PlayFromStart()
                                 WellEaterIndicator:SetHidden(false)
-                                zo_callLater(hideOut, 1000)
+                                WellEaterIndicatorLabel:SetText(formattedName)
+                                zo_callLater(function()
+                                    hideOut(WellEaterIndicatorLabel, WellEater.AnimOut)
+                                end, 1500)
 
                             end
                             df("[%s] %s", WellEater.AddonName, formattedName)
@@ -223,7 +226,7 @@ local function checkEquippedWeapon()
     local bagC
     local locSettings = WellEater:getAllUserPreferences()
 
-    for testSlot,isToCheck in pairs(locSettings.slots) do
+    for testSlot, isToCheck in pairs(locSettings.slots) do
         if isToCheck and HasItemInSlot(BAG_WORN, testSlot)
                 and not IsLockedWeaponSlot(testSlot) then
             local linkId = GetItemLink(BAG_WORN, testSlot)
@@ -252,10 +255,12 @@ local function checkEquippedWeapon()
                             df("[%s] %s", WellEater.AddonName, formattedName)
                             local toScreen = locSettings.notifyToScreen
                             if toScreen then
-                                WellEaterIndicatorWeaponLabel:SetText(formattedName)
                                 WellEater.WeaponAnimIn:PlayFromStart()
                                 WellEaterIndicator:SetHidden(false)
-                                zo_callLater(hideOut, 1000)
+                                WellEaterIndicatorWeaponLabel:SetText(formattedName)
+                                zo_callLater(function()
+                                        hideOut(WellEaterIndicatorWeaponLabel, WellEater.WeaponAnimOut)
+                                end, 1500)
                             end
                             break
                         end
@@ -317,12 +322,11 @@ local function ShutDown()
     EVENT_MANAGER:UnregisterForUpdate(WellEater.AddonName .. "_TimersUpdate")
 end
 
-
-local function OnUIError(_,errorString)
+local function OnUIError(_, errorString)
     --Hide some bugs
     --      if string.match(errorString,"Too many anchors")~=nil
     --      or string.match(errorString,"LibMapPins")~=nil
-    if string.match(errorString,WellEater.AddonName) then
+    if string.match(errorString, WellEater.AddonName) then
         ShutDown()
         ZO_UIErrorsTextEdit:SetText(errorString)
         ZO_UIErrorsTextEdit:SetCursorPosition(1)
@@ -336,7 +340,7 @@ local function InitOnLoad(_, addonName)
 
     EVENT_MANAGER:UnregisterForEvent(WellEater.AddonName, EVENT_ADD_ON_LOADED)
     -- Settings initialization
-    WellEater.settingsUser = ZO_SavedVars:NewCharacterIdSettings( "WellEater_Settings",
+    WellEater.settingsUser = ZO_SavedVars:NewCharacterIdSettings("WellEater_Settings",
             WellEater.WELLEATER_SAVED_VERSION,
             "general",
             NAMESPACE.settingsDefaults)
@@ -359,7 +363,6 @@ local function InitOnLoad(_, addonName)
                 end
             end
     )
-
 
     EVENT_MANAGER:RegisterForEvent(
             WellEater.AddonName,
@@ -414,7 +417,7 @@ local function InitOnLoad(_, addonName)
     EVENT_MANAGER:RegisterForEvent(
             WellEater.AddonName,
             EVENT_PLAYER_ACTIVATED,
-            function(_,initial)
+            function(_, initial)
                 if initial then
                     if not WellEater:isAddonEnabled() then
                         return
@@ -426,7 +429,7 @@ local function InitOnLoad(_, addonName)
             end
     )
 
--- EVENT_PLAYER_DEACTIVATED
+    -- EVENT_PLAYER_DEACTIVATED
     EVENT_MANAGER:RegisterForEvent(
             WellEater.AddonName,
             EVENT_PLAYER_DEACTIVATED,
