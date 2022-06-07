@@ -16,9 +16,9 @@ local L = {
 
     youEat = "You have eaten <<1>>",
     youCharge = "Charged <<1>>",
-    outputSetupHeader = "Meal eaten notification output",
+    outputSetupHeader = "notification output",
     outputOnScreen = "On screen",
-    outputSetupHeader_TT = "When on the notification about the meal eaten is written to the screen not only to the debug log",
+    outputSetupHeader_TT = "When on the notification about the meal eaten or weapon recharged is written to the screen not only to the debug log",
 
     mealSetupHeader = "Kind of meal to use",
     mealSetupDescription = "What kind of meal to use: food or drink. WARNING If both are off then" ..

@@ -17,10 +17,10 @@ local L = {
 
     youEat = "Sie haben <<1>> gegessen",
     youCharge = "Eingeladen <<1>>",
-    outputSetupHeader = "Anzeigen die Nachricht über das gegessene Gericht",
+    outputSetupHeader = "Anzeigen die Nachricht",
     outputOnScreen = "Auf den Bildschirm",
     outputSetupHeader_TT = "Wenn die Einstellung aktiviert ist, wird eine Nachricht über das gegessene Gericht" ..
-            " auf dem Bildschirm angezeigt, und nicht nur zum Debug-Log",
+            " oder die verzauberte Waffe auf dem Bildschirm angezeigt, und nicht nur zum Debug-Log",
 
     mealSetupHeader = "Gerichtart",
     mealSetupDescription = "Was zu verwenden: Essen oder Trinken. ACHTUNG Wenn die Beide ausgeschaltet sind," ..
@@ -33,10 +33,10 @@ local L = {
     weaponSetupHeader = "Waffen",
     weaponSetupDescription = "Es kommt Waffen Autoverzauberung vor, wenn die Gebühranzahl Minimal oder kleiner ist und" ..
             " ein Seelenstein im Inventar vorliegt",
-    weaponSetupEnchantMainHand = "Haupthand Waffen",
-    weaponSetupEnchantOffHand = "Ergänzendhand Waffen",
-    weaponSetupEnchantMainHandBack = "Haupthand Waffen zweitrangig",
-    weaponSetupEnchantOffHandBack = "Ergänzendhand Waffen zweitrangig",
+    weaponSetupEnchantMainHand = "Haupthande Waffe",
+    weaponSetupEnchantOffHand = "Ergänzendhande Waffe",
+    weaponSetupEnchantMainHandBack = "Haupthande Waffe zweitrangig",
+    weaponSetupEnchantOffHandBack = "Ergänzendhande Waffe zweitrangig",
     minCharges = "Minimalgebühranzahl",
 
 }
