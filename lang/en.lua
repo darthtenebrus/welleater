@@ -1,6 +1,7 @@
 WellEater = WellEater or {}
 local L = {
-    generalSetupDescription = "Auto eat your preferred meals provided by your inventory after food or drink buff expiration",
+    generalSetupDescription = "Auto eat your preferred meals provided by your inventory after" ..
+            " food or drink buff expiration. Provides weapon autoload",
     foodQualityHeader = "Quality of food to search",
     foodQualityDescription = "Allows to choose the quality of the food",
     foods = {

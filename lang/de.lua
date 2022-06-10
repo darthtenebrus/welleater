@@ -1,6 +1,7 @@
 WellEater = WellEater or {}
 local L = {
-    generalSetupDescription = "Lässt es Ihnen, nach die Essen- oder Trinken-Bufffs auslaufen, im Inventar gefundene Gericht automatisch essen",
+    generalSetupDescription = "Lässt es Ihnen, nach die Essen- oder Trinken-Bufffs auslaufen, im Inventar" ..
+            " gefundene Gericht automatisch essen. Auch gibt es eine Waffenautoeinladung",
     foodQualityHeader = "Die Qualität der suchenden Lebensmittel",
     foodQualityDescription = "Lasst die Qualität der Lebensmittel auswahlen",
     foods = {

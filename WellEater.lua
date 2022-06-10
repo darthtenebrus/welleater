@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.0.5"
+WellEater.Version = "1.0.6"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -24,6 +24,7 @@ NAMESPACE.settingsDefaults = {
     minCharges = 300,
 }
 NAMESPACE.conversation = false
+NAMESPACE.notifications = {}
 
 function WellEater:isWeaponCheckable()
     local settings = self:getAllUserPreferences()
@@ -194,26 +195,17 @@ local function processAutoEat()
                     local usable, onlyFromActionSlot = IsItemUsable(bagId, slotId)
                     if usable and not onlyFromActionSlot then
 
+                        tryToUseItem(bagId, slotId)
+
                         local itemLink = GetItemLink(bagId, slotId)
-                        local hasAbility, abilityHeader, abilityDescription = GetItemLinkOnUseAbilityInfo(itemLink)
+                        local _, _, abilityDescription = GetItemLinkOnUseAbilityInfo(itemLink)
                         local locale = WellEater:getLocale()
                         local formattedName = zo_strformat(locale.youEat, GetItemLinkName(itemLink)) -- no control codes
 
                         if formattedName and abilityDescription then
-                            local toScreen = locSettings.notifyToScreen
-                            if toScreen then
-                                WellEater.AnimIn:PlayFromStart()
-                                WellEaterIndicator:SetHidden(false)
-                                WellEaterIndicatorLabel:SetText(formattedName)
-                                zo_callLater(function()
-                                    hideOut(WellEaterIndicatorLabel, WellEater.AnimOut)
-                                end, 1500)
-
-                            end
-                            df("[%s] %s", WellEater.AddonName, formattedName)
+                            NAMESPACE.notifications.formattedName = formattedName
+                            NAMESPACE.notifications.abilityDescription = abilityDescription
                         end
-
-                        tryToUseItem(bagId, slotId)
 
                         break
                     end
@@ -296,6 +288,21 @@ local function TimersUpdate()
     if not haveFood then
         --d(WellEater.AddonName .. " Time To Eat")
         processAutoEat()
+    else
+        if NAMESPACE.notifications.formattedName and
+                NAMESPACE.notifications.abilityDescription then
+            local toScreen = WellEater:getUserPreference("notifyToScreen")
+            if toScreen then
+                WellEater.AnimIn:PlayFromStart()
+                WellEaterIndicator:SetHidden(false)
+                WellEaterIndicatorLabel:SetText(formattedName)
+                zo_callLater(function()
+                    hideOut(WellEaterIndicatorLabel, WellEater.AnimOut)
+                end, 1500)
+            end
+            df("[%s] %s", WellEater.AddonName, formattedName)
+        end
+        NAMESPACE.notifications = {}
     end
 
     local isCheckable = WellEater:isWeaponCheckable()
