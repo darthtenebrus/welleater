@@ -295,12 +295,12 @@ local function TimersUpdate()
             if toScreen then
                 WellEater.AnimIn:PlayFromStart()
                 WellEaterIndicator:SetHidden(false)
-                WellEaterIndicatorLabel:SetText(formattedName)
+                WellEaterIndicatorLabel:SetText(NAMESPACE.notifications.formattedName)
                 zo_callLater(function()
                     hideOut(WellEaterIndicatorLabel, WellEater.AnimOut)
                 end, 1500)
             end
-            df("[%s] %s", WellEater.AddonName, formattedName)
+            df("[%s] %s", WellEater.AddonName, NAMESPACE.notifications.formattedName)
         end
         NAMESPACE.notifications = {}
     end
