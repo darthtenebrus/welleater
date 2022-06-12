@@ -6,7 +6,7 @@ local L = {
     foodQualityDescription = "Lasst die Qualität der Lebensmittel auswahlen",
     foods = {
         [ITEM_QUALITY_MAGIC] = "|c00FB00Gut|r",
-        [ITEM_QUALITY_ARCANE] = "|c0000FFAusgezeichnet|r",
+        [ITEM_QUALITY_ARCANE] = "|c0077FFAusgezeichnet|r",
         [ITEM_QUALITY_ARTIFACT] = "|c9400D3Episch|r",
         [ITEM_QUALITY_LEGENDARY] = "|cFFFF00Legendär|r",
     },

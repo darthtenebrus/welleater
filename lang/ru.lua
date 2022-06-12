@@ -6,7 +6,7 @@ local L = {
     foodQualityDescription = "Позволяет выбрать качество еды",
     foods = {
         [ITEM_QUALITY_MAGIC] = "|c00FB00Хорошее|r",
-        [ITEM_QUALITY_ARCANE] = "|c0000FFПревосходное|r",
+        [ITEM_QUALITY_ARCANE] = "|c0077FFПревосходное|r",
         [ITEM_QUALITY_ARTIFACT] = "|c9400D3Эпическое|r",
         [ITEM_QUALITY_LEGENDARY] = "|cFFFF00Легендарное|r",
     },
@@ -43,7 +43,7 @@ local L = {
     useCrownGemsTitle_TT = "При поиске камня душ в инвентаре учитывать и кронные камни",
 
     useCrownFoodTitle = "Использовать кронную еду",
-    useCrownFoodTitle_TT = "При поиске камня душ в инвентаре учитывать и кронную еду",
+    useCrownFoodTitle_TT = "При поиске еды в инвентаре учитывать и кронную еду",
 
 }
 
