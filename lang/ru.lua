@@ -5,10 +5,10 @@ local L = {
     foodQualityHeader = "Качество искомой еды",
     foodQualityDescription = "Позволяет выбрать качество еды",
     foods = {
-        [ITEM_QUALITY_MAGIC] = "Хорошее (зеленое)",
-        [ITEM_QUALITY_ARCANE] = "Превосходное (синее)",
-        [ITEM_QUALITY_ARTIFACT] = "Эпическое (фиолетовое)",
-        [ITEM_QUALITY_LEGENDARY] = "Легендарное (золотое)",
+        [ITEM_QUALITY_MAGIC] = "|c00FB00Хорошее|r",
+        [ITEM_QUALITY_ARCANE] = "|c0000FFПревосходное|r",
+        [ITEM_QUALITY_ARTIFACT] = "|c9400D3Эпическое|r",
+        [ITEM_QUALITY_LEGENDARY] = "|cFFFF00Легендарное|r",
     },
     timerSetupHeader = "Таймер опроса состояния персонажа",
     timerSetupLabel = "Период опроса, мс",
@@ -39,6 +39,11 @@ local L = {
     weaponSetupEnchantOffHandBack = "Оружие в дополнительной руке, вторая панель",
 
     minCharges = "Минимальное количество зарядов",
+    useCrownGemsTitle = "Использовать кронные камни душ",
+    useCrownGemsTitle_TT = "При поиске камня душ в инвентаре учитывать и кронные камни",
+
+    useCrownFoodTitle = "Использовать кронную еду",
+    useCrownFoodTitle_TT = "При поиске камня душ в инвентаре учитывать и кронную еду",
 
 }
 

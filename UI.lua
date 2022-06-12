@@ -125,6 +125,12 @@ function WellEater:initSettingsMenu()
         }, "general", i)
     end
 
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.useCrownFoodTitle,
+        tooltip = L.useCrownFoodTitle_TT,
+    }, "general", "useCrownFood")
+
     sTable = MakeSubmenu(optionsTable,L.weaponSetupHeader, L.weaponSetupDescription)
 
     MakeControlEntry(sTable,{
@@ -150,6 +156,12 @@ function WellEater:initSettingsMenu()
         name = L.weaponSetupEnchantOffHandBack,
         tooltip = L.weaponSetupEnchantOffHandBack,
     }, "slots", EQUIP_SLOT_BACKUP_OFF)
+
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.useCrownGemsTitle,
+        tooltip = L.useCrownGemsTitle_TT,
+    }, "general", "useCrownGems")
 
     MakeControlEntry(sTable,{
         type = "slider",

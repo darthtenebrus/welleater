@@ -5,10 +5,10 @@ local L = {
     foodQualityHeader = "Quality of food to search",
     foodQualityDescription = "Allows to choose the quality of the food",
     foods = {
-        [ITEM_QUALITY_MAGIC] = "Normal (green)",
-        [ITEM_QUALITY_ARCANE] = "Excellent (blue)",
-        [ITEM_QUALITY_ARTIFACT] = "Artifact (cyan)",
-        [ITEM_QUALITY_LEGENDARY] = "Legendary (gold)",
+        [ITEM_QUALITY_MAGIC] = "|c00FB00Normal|r",
+        [ITEM_QUALITY_ARCANE] = "|c0000FFExcellent|r",
+        [ITEM_QUALITY_ARTIFACT] = "|c9400D3Artifact|r",
+        [ITEM_QUALITY_LEGENDARY] = "|cFFFF00Legendary|r",
     },
     timerSetupHeader = "Character status scan timer",
     timerSetupLabel = "Scan period, ms",
@@ -36,6 +36,13 @@ local L = {
     weaponSetupEnchantOffHandBack = "Off hand weapon secondary",
 
     minCharges = "Minimum number of charges",
+    useCrownGemsTitle = "Use crown soul gems",
+    useCrownGemsTitle_TT = "While searching for a soul gem crown ones are taken into the account",
+
+    useCrownFoodTitle = "Use crown food",
+    useCrownFoodTitle_TT = "While searching for a food crown meals are taken into the account",
+
+
 
 }
 

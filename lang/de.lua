@@ -5,10 +5,10 @@ local L = {
     foodQualityHeader = "Die Qualität der suchenden Lebensmittel",
     foodQualityDescription = "Lasst die Qualität der Lebensmittel auswahlen",
     foods = {
-        [ITEM_QUALITY_MAGIC] = "Gut (grün)",
-        [ITEM_QUALITY_ARCANE] = "Ausgezeichnet (blau)",
-        [ITEM_QUALITY_ARTIFACT] = "Episch (lila)",
-        [ITEM_QUALITY_LEGENDARY] = "Legendär (gold)",
+        [ITEM_QUALITY_MAGIC] = "|c00FB00Gut|r",
+        [ITEM_QUALITY_ARCANE] = "|c0000FFAusgezeichnet|r",
+        [ITEM_QUALITY_ARTIFACT] = "|c9400D3Episch|r",
+        [ITEM_QUALITY_LEGENDARY] = "|cFFFF00Legendär|r",
     },
     timerSetupHeader = "Abfragezeitmeter für den Charakterstatus",
     timerSetupLabel = "Zeitintervall, ms",
@@ -39,6 +39,12 @@ local L = {
     weaponSetupEnchantMainHandBack = "Haupthande Waffe zweitrangig",
     weaponSetupEnchantOffHandBack = "Ergänzendhande Waffe zweitrangig",
     minCharges = "Minimalgebühranzahl",
+    useCrownGemsTitle = "Kroneseelensteine benutzen",
+    useCrownGemsTitle_TT = "Gefundene Kroneseelensteine benutzt werden",
+
+    useCrownFoodTitle = "Kronessen benutzen",
+    useCrownFoodTitle_TT = "Das gefundene Kronessen benutzt wird",
+
 
 }
 

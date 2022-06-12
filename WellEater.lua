@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.0.6"
+WellEater.Version = "1.0.7"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -22,6 +22,8 @@ NAMESPACE.settingsDefaults = {
         [EQUIP_SLOT_BACKUP_OFF] = true,
     },
     minCharges = 300,
+    useCrownGems = true,
+    useCrownFood = false,
 }
 NAMESPACE.conversation = false
 NAMESPACE.notifications = {}
@@ -181,13 +183,16 @@ local function processAutoEat()
         local locSettings = WellEater:getAllUserPreferences()
         local useFood = locSettings.useFood
         local useDrink = locSettings.useDrink
+        local useCrownFood = locSettings.useCrownFood
         local slotId = itemInfo.slotIndex
         if not itemInfo.stolen then
             local itemType, specialType = GetItemType(bagId, slotId)
+            local useThisFood = (specialType ~= SPECIALIZED_ITEMTYPE_CROWN_ITEM or
+                    (useCrownFood and specialType == SPECIALIZED_ITEMTYPE_CROWN_ITEM))
             local itemId = GetItemId(bagId, slotId)
             if ((useFood and itemType == ITEMTYPE_FOOD) or
                     (useDrink and itemType == ITEMTYPE_DRINK)) and
-                    not SkillUpItem(itemId) then
+                    useThisFood and not SkillUpItem(itemId) then
                 local icon, stack, sellPrice, meetsUsageRequirement, locked, equipType, itemStyleId, quality = GetItemInfo(bagId, slotId)
 
                 if meetsUsageRequirement and locSettings and locSettings[quality] then
@@ -238,9 +243,13 @@ local function checkEquippedWeapon()
 
                 for _, itemInfo in pairs(bagC) do
                     local slotId = itemInfo.slotIndex
-                    if not itemInfo.stolen then
-                        local itemType, specialType = GetItemType(BAG_BACKPACK, slotId)
-                        if itemType == ITEMTYPE_SOUL_GEM then
+                    if not itemInfo.stolen and IsItemSoulGem(SOUL_GEM_TYPE_FILLED, BAG_BACKPACK, slotId) then
+                        local specializedItemType = select(2, GetItemType(BAG_BACKPACK, slotId))
+                        local useCrownGems = locSettings.useCrownGems
+
+                        local useThis = (specializedItemType ~= SPECIALIZED_ITEMTYPE_CROWN_ITEM or
+                                (useCrownGems and specializedItemType == SPECIALIZED_ITEMTYPE_CROWN_ITEM))
+                        if useThis then
                             ChargeItemWithSoulGem(BAG_WORN, testSlot, BAG_BACKPACK, slotId)
                             local iName = GetItemLinkName(GetItemLink(BAG_WORN, testSlot))
                             local locale = WellEater:getLocale()
