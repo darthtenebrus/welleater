@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.0.8"
+WellEater.Version = "1.0.9"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -374,6 +374,11 @@ local function TimersUpdate()
         checkEquippedWeapon()
     end
 
+    local useRepair = WellEater:getUserPreference("useRepair")
+    if useRepair then
+        checkAndRepair()
+    end
+
 end
 
 local function StartUp()
@@ -428,11 +433,6 @@ local function InitOnLoad(_, addonName)
 
                 if not arg then
                     --d(WellEater.AddonName .. " Combat exited")
-                    local useRepair = WellEater:getUserPreference("useRepair")
-                    if useRepair then
-                        checkAndRepair()
-                    end
-
                     StartUp()
                 else
                     --d(WellEater.AddonName .. " Combat entered")
