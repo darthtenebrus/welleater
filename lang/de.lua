@@ -18,6 +18,7 @@ local L = {
 
     youEat = "Sie haben <<1>> gegessen",
     youCharge = "Eingeladen <<1>>",
+    youRepair = "Reparieren <<1>>",
     outputSetupHeader = "Anzeigen die Nachricht",
     outputOnScreen = "Auf den Bildschirm",
     outputSetupHeader_TT = "Wenn die Einstellung aktiviert ist, wird eine Nachricht über das gegessene Gericht" ..
@@ -45,7 +46,12 @@ local L = {
     useCrownFoodTitle = "Kronessen benutzen",
     useCrownFoodTitle_TT = "Das gefundene Kronessen benutzt wird",
 
+    repairSetupHeader = "Automatische Reparatur",
+    repairSetupDescription = "Automatischereparaturbesetzung",
 
+    repairSetupCheck = "Automatische Reparatur",
+    repairSetupCheck_TT = "Sollen Sie einen Reparatursatz haben, um zu autoreparieren",
+    repairPercent = "Minimum Verfall %",
 }
 
 function WellEater:getLocale()

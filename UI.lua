@@ -170,6 +170,21 @@ function WellEater:initSettingsMenu()
         min = 50, max = 300, step = 10,
     }, "general", "minCharges")
 
+    sTable = MakeSubmenu(optionsTable,L.repairSetupHeader, L.repairSetupDescription)
+
+    MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.repairSetupCheck,
+        tooltip = L.repairSetupCheck_TT,
+    }, "general", "useRepair")
+
+    MakeControlEntry(sTable,{
+        type = "slider",
+        name = L.repairPercent,
+        tooltip = L.repairPercent,
+        min = 10, max = 50, step = 10,
+    }, "general", "percent")
+
     MakeControlEntry(optionsTable,{
         type = "header",
         name = L.outputSetupHeader,

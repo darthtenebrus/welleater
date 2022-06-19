@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.0.7"
+WellEater.Version = "1.0.8"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -24,9 +24,21 @@ NAMESPACE.settingsDefaults = {
     minCharges = 300,
     useCrownGems = true,
     useCrownFood = false,
+    useRepair = true,
+    percent = 10
 }
 NAMESPACE.conversation = false
 NAMESPACE.notifications = {}
+NAMESPACE.wearSlots = {
+    EQUIP_SLOT_CHEST,
+    EQUIP_SLOT_HEAD,
+    EQUIP_SLOT_SHOULDERS,
+    EQUIP_SLOT_WAIST,
+    EQUIP_SLOT_WRIST,
+    EQUIP_SLOT_HAND,
+    EQUIP_SLOT_LEGS,
+    EQUIP_SLOT_FEET
+}
 
 function WellEater:isWeaponCheckable()
     local settings = self:getAllUserPreferences()
@@ -220,6 +232,49 @@ local function processAutoEat()
     end
 end
 
+local function checkAndRepair()
+    local bagC
+    local locSettings = WellEater:getAllUserPreferences()
+
+    for _,testSlot in pairs(NAMESPACE.wearSlots) do
+        local linkId = GetItemLink(BAG_WORN, testSlot)
+        if HasItemInSlot(BAG_WORN, testSlot) and DoesItemLinkHaveArmorDecay(linkId) then
+            local numPercent = GetItemLinkCondition(linkId)
+            if numPercent < locSettings.percent then
+                if not bagC then
+                    SHARED_INVENTORY:RefreshInventory(BAG_BACKPACK)
+                    bagC = SHARED_INVENTORY:GetOrCreateBagCache(BAG_BACKPACK)
+
+                    if not bagC or type(bagC) ~= "table" then
+                        return
+                    end
+                end
+
+                for _, itemInfo in pairs(bagC) do
+                    local slotId = itemInfo.slotIndex
+                    if not itemInfo.stolen and IsItemRepairKit(BAG_BACKPACK, slotId) then
+                        RepairItemWithRepairKit(BAG_WORN, testSlot, BAG_BACKPACK, slotId)
+                        local iName = GetItemLinkName(GetItemLink(BAG_WORN, testSlot))
+                        local locale = WellEater:getLocale()
+                        local formattedName = zo_strformat(locale.youRepair, iName) -- no control codes
+                        df("[%s] %s", WellEater.AddonName, formattedName)
+                        local toScreen = locSettings.notifyToScreen
+                        if toScreen then
+                            WellEater.WeaponAnimIn:PlayFromStart()
+                            WellEaterIndicator:SetHidden(false)
+                            WellEaterIndicatorWeaponLabel:SetText(formattedName)
+                            zo_callLater(function()
+                                hideOut(WellEaterIndicatorWeaponLabel, WellEater.WeaponAnimOut)
+                            end, 1500)
+                        end
+                        break
+                    end
+                end
+            end
+        end
+    end
+end
+
 local function checkEquippedWeapon()
     local bagC
     local locSettings = WellEater:getAllUserPreferences()
@@ -373,6 +428,11 @@ local function InitOnLoad(_, addonName)
 
                 if not arg then
                     --d(WellEater.AddonName .. " Combat exited")
+                    local useRepair = WellEater:getUserPreference("useRepair")
+                    if useRepair then
+                        checkAndRepair()
+                    end
+
                     StartUp()
                 else
                     --d(WellEater.AddonName .. " Combat entered")

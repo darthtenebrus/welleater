@@ -17,6 +17,7 @@ local L = {
 
     youEat = "You have eaten <<1>>",
     youCharge = "Charged <<1>>",
+    youRepair = "Repaired <<1>>",
     outputSetupHeader = "notification output",
     outputOnScreen = "On screen",
     outputSetupHeader_TT = "When on the notification about the meal eaten or weapon recharged is written to the screen not only to the debug log",
@@ -42,7 +43,12 @@ local L = {
     useCrownFoodTitle = "Use crown food",
     useCrownFoodTitle_TT = "While searching for a food crown meals are taken into the account",
 
+    repairSetupHeader = "Autorepair",
+    repairSetupDescription = "Autorepair settings",
 
+    repairSetupCheck = "Armor Auto Repair",
+    repairSetupCheck_TT = "There should be a repair kit in the inventory to get this to work",
+    repairPercent = "Minimum % of decay",
 
 }
 

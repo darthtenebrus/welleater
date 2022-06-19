@@ -18,6 +18,7 @@ local L = {
 
     youEat = "Вы съели: <<1>>",
     youCharge = "Заряжено <<1>>",
+    youRepair = "Отремонтировано <<1>>",
     outputSetupHeader = "Вывод сообщения",
     outputOnScreen = "На экран",
     outputSetupHeader_TT = "При включенной настройке сообщение о съеденном блюде или перезарядке оружия будет выведено на экран, а не только" ..
@@ -44,6 +45,13 @@ local L = {
 
     useCrownFoodTitle = "Использовать кронную еду",
     useCrownFoodTitle_TT = "При поиске еды в инвентаре учитывать и кронную еду",
+
+    repairSetupHeader = "Авторемонт",
+    repairSetupDescription = "Настройки авторемонта",
+
+    repairSetupCheck = "Автоматический ремонт снаряжения",
+    repairSetupCheck_TT = "Для автоматического ремонта снаряжения необходим ремонтный набор в инвентаре",
+    repairPercent = "Минимальный % повреждения",
 
 }
 
