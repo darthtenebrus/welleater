@@ -1,7 +1,7 @@
 WellEater = WellEater or {}
 local L = {
     generalSetupDescription = "Lässt es Ihnen, nach die Essen- oder Trinken-Bufffs auslaufen, im Inventar" ..
-            " gefundene Gericht automatisch essen. Auch gibt es eine Waffenautoeinladung",
+            " gefundene Gericht automatisch essen. Auch gibt es eine Waffenautoeinladung und eine automatische Reparatur",
     foodQualityHeader = "Die Qualität der suchenden Lebensmittel",
     foodQualityDescription = "Lasst die Qualität der Lebensmittel auswahlen",
     foods = {
@@ -54,6 +54,32 @@ local L = {
     repairPercent = "Minimum Verfall %",
 }
 
-function WellEater:getLocale()
-    return L
+for k, v in pairs(L) do
+    if type(v) ~= "table" then
+        local string = "WELLEATER_" .. string.upper(k)
+        ZO_CreateStringId(string, v)
+    elseif k == "foods" then
+        for ik, iv in pairs(v) do
+            local string = "WELLEATER_FOODS_" .. ik
+            ZO_CreateStringId(string, iv)
+        end
+    end
+end
+
+if (GetCVar('language.2') == 'de') then
+    local MissingL = {}
+    for k, v in pairs(WellEater:getLocale()) do
+        if (not L[k]) then
+            table.insert(MissingL, k)
+            L[k] = v
+        end
+    end
+    function WellEater:getLocale()
+        return L
+    end
+    -- for debugging
+    function WellEater:MissingLocale()
+        df("[WellEater] Missing strings for '%s'", GetCVar('language.2'))
+        d(MissingL)
+    end
 end

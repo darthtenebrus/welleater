@@ -1,7 +1,7 @@
 WellEater = WellEater or {}
 local L = {
     generalSetupDescription = "После истечения времени эффектов, которые дает еда, позволяет автоматически съесть" ..
-            " найденное в инвентаре блюдо. Автоподзарядка оружия",
+            " найденное в инвентаре блюдо. Автоподзарядка оружия и авторемонт брони",
     foodQualityHeader = "Качество искомой еды",
     foodQualityDescription = "Позволяет выбрать качество еды",
     foods = {
@@ -13,8 +13,8 @@ local L = {
     timerSetupHeader = "Таймер опроса состояния персонажа",
     timerSetupLabel = "Период опроса, мс",
     timerSetupLabel_TT = "Как часто состояние персонаж сканируется на наличие усилений (баффов) еды." ..
-    " Большее значение - меньше нагрузка но большая вероятность оказаться без еды на некоторое время"..
-    " в критической ситуации",
+            " Большее значение - меньше нагрузка но большая вероятность оказаться без еды на некоторое время" ..
+            " в критической ситуации",
 
     youEat = "Вы съели: <<1>>",
     youCharge = "Заряжено <<1>>",
@@ -55,6 +55,33 @@ local L = {
 
 }
 
-function WellEater:getLocale()
-    return L
+for k, v in pairs(L) do
+    if type(v) ~= "table" then
+        local string = "WELLEATER_" .. string.upper(k)
+        ZO_CreateStringId(string, v)
+    elseif k == "foods" then
+        for ik, iv in pairs(v) do
+            local string = "WELLEATER_FOODS_" .. ik
+            ZO_CreateStringId(string, iv)
+        end
+    end
 end
+
+if (GetCVar('language.2') == 'ru') then
+    local MissingL = {}
+    for k, v in pairs(WellEater:getLocale()) do
+        if (not L[k]) then
+            table.insert(MissingL, k)
+            L[k] = v
+        end
+    end
+    function WellEater:getLocale()
+        return L
+    end
+    -- for debugging
+    function WellEater:MissingLocale()
+        df("[WellEater] Missing strings for '%s'", GetCVar('language.2'))
+        d(MissingL)
+    end
+end
+

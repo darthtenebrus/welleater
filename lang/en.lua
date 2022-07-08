@@ -1,7 +1,7 @@
 WellEater = WellEater or {}
 local L = {
     generalSetupDescription = "Auto eat your preferred meals provided by your inventory after" ..
-            " food or drink buff expiration. Provides weapon autoload",
+            " food or drink buff expiration. Provides weapon autoload and armor autorepair",
     foodQualityHeader = "Quality of food to search",
     foodQualityDescription = "Allows to choose the quality of the food",
     foods = {
@@ -52,6 +52,23 @@ local L = {
 
 }
 
+for k, v in pairs(L) do
+    if type(v) ~= "table" then
+        local string = "WELLEATER_" .. string.upper(k)
+        ZO_CreateStringId(string, v)
+    elseif k == "foods" then
+        for ik, iv in pairs(v) do
+            local string = "WELLEATER_FOODS_" .. ik
+            ZO_CreateStringId(string, iv)
+        end
+    end
+end
+
 function WellEater:getLocale()
     return L
+end
+
+
+function WellEater:MissingLocale()
+    d("[WellEater] Obviously not missing any english strings...")
 end
