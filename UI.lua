@@ -179,6 +179,12 @@ function WellEater:initSettingsMenu()
     }, "general", "useRepair")
 
     MakeControlEntry(sTable,{
+        type = "checkbox",
+        name = L.useCrownRepairTitle,
+        tooltip = L.useCrownRepairTitle_TT,
+    }, "general", "useCrownRepair")
+
+    MakeControlEntry(sTable,{
         type = "slider",
         name = L.repairPercent,
         tooltip = L.repairPercent,

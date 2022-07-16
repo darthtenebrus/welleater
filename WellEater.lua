@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.0"
+WellEater.Version = "1.1.1"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -25,6 +25,7 @@ NAMESPACE.settingsDefaults = {
     useCrownGems = true,
     useCrownFood = false,
     useRepair = true,
+    useCrownRepair = false,
     percent = 10
 }
 NAMESPACE.conversation = false
@@ -236,7 +237,7 @@ local function checkAndRepair()
     local bagC
     local locSettings = WellEater:getAllUserPreferences()
 
-    for _,testSlot in pairs(NAMESPACE.wearSlots) do
+    for _, testSlot in pairs(NAMESPACE.wearSlots) do
         local linkId = GetItemLink(BAG_WORN, testSlot)
         if HasItemInSlot(BAG_WORN, testSlot) and DoesItemLinkHaveArmorDecay(linkId) then
             local numPercent = GetItemLinkCondition(linkId)
@@ -252,22 +253,31 @@ local function checkAndRepair()
 
                 for _, itemInfo in pairs(bagC) do
                     local slotId = itemInfo.slotIndex
-                    if not itemInfo.stolen and IsItemRepairKit(BAG_BACKPACK, slotId) then
-                        RepairItemWithRepairKit(BAG_WORN, testSlot, BAG_BACKPACK, slotId)
-                        local iName = GetItemLinkName(GetItemLink(BAG_WORN, testSlot))
+
+                    if not itemInfo.stolen and IsItemNonGroupRepairKit(BAG_BACKPACK, slotId) then
                         local locale = WellEater:getLocale()
-                        local formattedName = zo_strformat(locale.youRepair, iName) -- no control codes
-                        df("[%s] %s", WellEater.AddonName, formattedName)
-                        local toScreen = locSettings.notifyToScreen
-                        if toScreen then
-                            WellEater.WeaponAnimIn:PlayFromStart()
-                            WellEaterIndicator:SetHidden(false)
-                            WellEaterIndicatorWeaponLabel:SetText(formattedName)
-                            zo_callLater(function()
-                                hideOut(WellEaterIndicatorWeaponLabel, WellEater.WeaponAnimOut)
-                            end, 1500)
+                        local formattedName
+                        if IsItemNonCrownRepairKit(BAG_BACKPACK, slotId) then
+                            RepairItemWithRepairKit(BAG_WORN, testSlot, BAG_BACKPACK, slotId)
+                            local iName = GetItemLinkName(GetItemLink(BAG_WORN, testSlot))
+                            formattedName = zo_strformat(locale.youRepair, iName) -- no control codes
+                        elseif locSettings.useCrownRepair then
+                            tryToUseItem(BAG_BACKPACK, slotId)
+                            formattedName = locale.allRepair
                         end
-                        break
+                        if formattedName then
+                            df("[%s] %s", WellEater.AddonName, formattedName)
+                            local toScreen = locSettings.notifyToScreen
+                            if toScreen then
+                                WellEater.WeaponAnimIn:PlayFromStart()
+                                WellEaterIndicator:SetHidden(false)
+                                WellEaterIndicatorWeaponLabel:SetText(formattedName)
+                                zo_callLater(function()
+                                    hideOut(WellEaterIndicatorWeaponLabel, WellEater.WeaponAnimOut)
+                                end, 1500)
+                            end
+                            break
+                        end
                     end
                 end
             end

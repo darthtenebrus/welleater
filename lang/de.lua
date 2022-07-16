@@ -19,6 +19,7 @@ local L = {
     youEat = "Sie haben <<1>> gegessen",
     youCharge = "Eingeladen <<1>>",
     youRepair = "Reparieren <<1>>",
+    allRepair = "alles",
     outputSetupHeader = "Anzeigen die Nachricht",
     outputOnScreen = "Auf den Bildschirm",
     outputSetupHeader_TT = "Wenn die Einstellung aktiviert ist, wird eine Nachricht über das gegessene Gericht" ..
@@ -52,6 +53,9 @@ local L = {
     repairSetupCheck = "Automatische Reparatur",
     repairSetupCheck_TT = "Sollen Sie einen Reparatursatz haben, um zu autoreparieren",
     repairPercent = "Minimum Verfall %",
+
+    useCrownRepairTitle = "Kronreparatursatz benutzen",
+    useCrownRepairTitle_TT = "Kronreparatursatz benutzen",
 }
 
 for k, v in pairs(L) do
