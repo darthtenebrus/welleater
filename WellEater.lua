@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.1"
+WellEater.Version = "1.1.2"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -135,6 +135,10 @@ NAMESPACE.skillUpItems = {
 
 }
 
+NAMESPACE.crownFoods = {
+    [64711] = true
+}
+
 -- local functions
 
 local function hideOut(control, animationOut)
@@ -192,27 +196,72 @@ local function processAutoEat()
         return
     end
 
+    local locSettings = WellEater:getAllUserPreferences()
+    local useFood = locSettings.useFood
+    local useDrink = locSettings.useDrink
+    local useCrownFood = locSettings.useCrownFood
+    --[[
+        table.sort(bagCache, function(a, b)
+            if not a or type(a) ~= "table" then
+                return false
+            end
+
+            if not a.stolen then
+                local slotId = a.slotIndex
+                local itemType = GetItemType(bagId, slotId)
+                local itemId = GetItemId(bagId, slotId)
+                if ((useFood and itemType == ITEMTYPE_FOOD) or
+                        (useDrink and itemType == ITEMTYPE_DRINK)) and
+                        not SkillUpItem(itemId) then
+                    if useCrownFood then
+                        return NAMESPACE.crownFoods[itemId]
+                    else
+                        return not NAMESPACE.crownFoods[itemId]
+                    end
+                else
+                    return false
+                end
+            else
+                return false
+            end
+        end)
+    ]]
     for _, itemInfo in pairs(bagCache) do
-        local locSettings = WellEater:getAllUserPreferences()
-        local useFood = locSettings.useFood
-        local useDrink = locSettings.useDrink
-        local useCrownFood = locSettings.useCrownFood
+
         local slotId = itemInfo.slotIndex
         if not itemInfo.stolen then
-            local itemType, specialType = GetItemType(bagId, slotId)
-            local useThisFood = (specialType ~= SPECIALIZED_ITEMTYPE_CROWN_ITEM or
-                    (useCrownFood and specialType == SPECIALIZED_ITEMTYPE_CROWN_ITEM))
+            local itemType = GetItemType(bagId, slotId)
             local itemId = GetItemId(bagId, slotId)
+            local useThisFood = (not NAMESPACE.crownFoods[itemId] or (useCrownFood and NAMESPACE.crownFoods[itemId]))
+            --[[d("key = " .. i)
+            d("name = " .. GetItemName(bagId, slotId))
+            d("useThisFood = ")
+            d(useThisFood)
+]]
             if ((useFood and itemType == ITEMTYPE_FOOD) or
-                    (useDrink and itemType == ITEMTYPE_DRINK)) and
-                    useThisFood and not SkillUpItem(itemId) then
+                    (useDrink and itemType == ITEMTYPE_DRINK)) and useThisFood and not SkillUpItem(itemId) then
+
+
+                --d("itemType = " .. itemType)
                 local icon, stack, sellPrice, meetsUsageRequirement, locked, equipType, itemStyleId, quality = GetItemInfo(bagId, slotId)
 
                 if meetsUsageRequirement and locSettings and locSettings[quality] then
-
+--[[
+                    d("meetsUsageRequirement = ")
+                    d(meetsUsageRequirement)
+                    d("locSettings[quality] = ")
+                    d(locSettings[quality])
+]]
                     local usable, onlyFromActionSlot = IsItemUsable(bagId, slotId)
                     if usable and not onlyFromActionSlot then
+--[[
+                        d("usable = ")
+                        d(usable)
+                        d("onlyFromActionSlot = ")
+                        d(onlyFromActionSlot)
 
+                        d("Trying...")
+                        ]]
                         tryToUseItem(bagId, slotId)
 
                         local itemLink = GetItemLink(bagId, slotId)
@@ -249,6 +298,24 @@ local function checkAndRepair()
                     if not bagC or type(bagC) ~= "table" then
                         return
                     end
+                    --[[
+                                        table.sort(bagC, function(a, b)
+                                            if not a or type(a) ~= "table" then
+                                                return false
+                                            end
+
+                                            local slotId = a.slotIndex
+                                            if not a.stolen and IsItemNonGroupRepairKit(BAG_BACKPACK, slotId) then
+                                                if locSettings.useCrownRepair then
+                                                    return not IsItemNonCrownRepairKit(BAG_BACKPACK, slotId)
+                                                else
+                                                    return IsItemNonCrownRepairKit(BAG_BACKPACK, slotId)
+                                                end
+                                            else
+                                                return false
+                                            end
+                                        end)
+                    ]]
                 end
 
                 for _, itemInfo in pairs(bagC) do
@@ -288,6 +355,7 @@ end
 local function checkEquippedWeapon()
     local bagC
     local locSettings = WellEater:getAllUserPreferences()
+    local useCrownGems = locSettings.useCrownGems
 
     for testSlot, isToCheck in pairs(locSettings.slots) do
         if isToCheck and HasItemInSlot(BAG_WORN, testSlot)
@@ -304,13 +372,31 @@ local function checkEquippedWeapon()
                     if not bagC or type(bagC) ~= "table" then
                         return
                     end
+                    --[[
+                                        table.sort(bagC, function(a, b)
+                                            if not a or type(a) ~= "table" then
+                                                return false
+                                            end
+
+                                            local slotId = a.slotIndex
+                                            local specializedItemType = select(2, GetItemType(BAG_BACKPACK, slotId))
+                                            if not a.stolen and IsItemSoulGem(SOUL_GEM_TYPE_FILLED, BAG_BACKPACK, slotId) then
+                                                if useCrownGems then
+                                                    return specializedItemType == SPECIALIZED_ITEMTYPE_CROWN_ITEM
+                                                else
+                                                    return specializedItemType ~= SPECIALIZED_ITEMTYPE_CROWN_ITEM
+                                                end
+                                            else
+                                                return false
+                                            end
+                                        end)
+                    ]]
                 end
 
                 for _, itemInfo in pairs(bagC) do
                     local slotId = itemInfo.slotIndex
                     if not itemInfo.stolen and IsItemSoulGem(SOUL_GEM_TYPE_FILLED, BAG_BACKPACK, slotId) then
                         local specializedItemType = select(2, GetItemType(BAG_BACKPACK, slotId))
-                        local useCrownGems = locSettings.useCrownGems
 
                         local useThis = (specializedItemType ~= SPECIALIZED_ITEMTYPE_CROWN_ITEM or
                                 (useCrownGems and specializedItemType == SPECIALIZED_ITEMTYPE_CROWN_ITEM))
