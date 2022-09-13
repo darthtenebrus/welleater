@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.2"
+WellEater.Version = "1.1.3"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -285,6 +285,7 @@ end
 local function checkAndRepair()
     local bagC
     local locSettings = WellEater:getAllUserPreferences()
+    local wasCrownUsed = false
 
     for _, testSlot in pairs(NAMESPACE.wearSlots) do
         local linkId = GetItemLink(BAG_WORN, testSlot)
@@ -331,6 +332,7 @@ local function checkAndRepair()
                         elseif locSettings.useCrownRepair then
                             tryToUseItem(BAG_BACKPACK, slotId)
                             formattedName = locale.allRepair
+                            wasCrownUsed = true
                         end
                         if formattedName then
                             df("[%s] %s", WellEater.AddonName, formattedName)
@@ -343,7 +345,11 @@ local function checkAndRepair()
                                     hideOut(WellEaterIndicatorWeaponLabel, WellEater.WeaponAnimOut)
                                 end, 1500)
                             end
-                            break
+                            if wasCrownUsed then
+                                return
+                            else
+                                break
+                            end
                         end
                     end
                 end
