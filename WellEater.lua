@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.3"
+WellEater.Version = "1.1.4"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -28,7 +28,6 @@ NAMESPACE.settingsDefaults = {
     useCrownRepair = false,
     percent = 10
 }
-NAMESPACE.conversation = false
 NAMESPACE.notifications = {}
 NAMESPACE.wearSlots = {
     EQUIP_SLOT_CHEST,
@@ -105,8 +104,30 @@ function WellEater:isAddonEnabled()
 end
 
 function WellEater:prepareToAnalize()
-    return self:isAddonEnabled() and not IsUnitInCombat("player")
+
+    local function isValidScene()
+
+        if not HUD_SCENE then
+            -- d("Scene is not initialized")
+            return false
+        end
+
+        local state = HUD_SCENE:GetState()
+        if state == SCENE_HIDDEN or state == SCENE_HIDING then
+            -- d("Scene is not showed")
+            return false
+        end
+
+        -- d("Scene is valid")
+        return true
+    end
+
+    local inStealth = GetUnitStealthState("player")
+
+    -- d("inStealth = " .. inStealth)
+    return self:isAddonEnabled() and isValidScene() and not IsUnitInCombat("player")
             and not IsUnitSwimming("player") and not IsUnitDead("player")
+            and inStealth == STEALTH_STATE_NONE
 end
 
 
@@ -616,34 +637,6 @@ local function InitOnLoad(_, addonName)
                 end
                 --d(WellEater.AddonName .. " Inactive")
                 ShutDown()
-            end
-    )
-
-    -- EVENT_CHATTER_BEGIN
-    EVENT_MANAGER:RegisterForEvent(
-            WellEater.AddonName,
-            EVENT_CHATTER_BEGIN,
-            function()
-                if not WellEater:isAddonEnabled() then
-                    return
-                end
-                NAMESPACE.conversation = true
-                -- df("[%s] %s",WellEater.AddonName, " Iteraction begin")
-                ShutDown()
-            end
-    )
-    --  EVENT_CHATTER_END
-    EVENT_MANAGER:RegisterForEvent(
-            WellEater.AddonName,
-            EVENT_CHATTER_END,
-            function()
-                if not WellEater:isAddonEnabled() or not NAMESPACE.conversation then
-                    -- df("[%s] %s",WellEater.AddonName, "Not in conversation")
-                    return
-                end
-                NAMESPACE.conversation = false
-                -- df("[%s] %s",WellEater.AddonName," Iteraction end")
-                StartUp()
             end
     )
 
