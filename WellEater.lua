@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.4"
+WellEater.Version = "1.1.5"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -157,7 +157,8 @@ NAMESPACE.skillUpItems = {
 }
 
 NAMESPACE.crownFoods = {
-    [64711] = true
+    [64711] = true,
+    [64712] = true
 }
 
 -- local functions
@@ -254,35 +255,18 @@ local function processAutoEat()
             local itemType = GetItemType(bagId, slotId)
             local itemId = GetItemId(bagId, slotId)
             local useThisFood = (not NAMESPACE.crownFoods[itemId] or (useCrownFood and NAMESPACE.crownFoods[itemId]))
-            --[[d("key = " .. i)
-            d("name = " .. GetItemName(bagId, slotId))
-            d("useThisFood = ")
-            d(useThisFood)
-]]
+
             if ((useFood and itemType == ITEMTYPE_FOOD) or
                     (useDrink and itemType == ITEMTYPE_DRINK)) and useThisFood and not SkillUpItem(itemId) then
 
 
-                --d("itemType = " .. itemType)
                 local icon, stack, sellPrice, meetsUsageRequirement, locked, equipType, itemStyleId, quality = GetItemInfo(bagId, slotId)
 
                 if meetsUsageRequirement and locSettings and locSettings[quality] then
---[[
-                    d("meetsUsageRequirement = ")
-                    d(meetsUsageRequirement)
-                    d("locSettings[quality] = ")
-                    d(locSettings[quality])
-]]
+
                     local usable, onlyFromActionSlot = IsItemUsable(bagId, slotId)
                     if usable and not onlyFromActionSlot then
---[[
-                        d("usable = ")
-                        d(usable)
-                        d("onlyFromActionSlot = ")
-                        d(onlyFromActionSlot)
 
-                        d("Trying...")
-                        ]]
                         tryToUseItem(bagId, slotId)
 
                         local itemLink = GetItemLink(bagId, slotId)

@@ -31,7 +31,7 @@
 ## Author: |c5EFFF5esorochinskiy|r
 ## APIVersion: 101033 101034 101035
 ## Description: Auto eat your preferred meals provided by your inventory after food or drink buff expiration. Provides weapon autoload and armor autorepair
-## Version: 1.1.4
+## Version: 1.1.5
 ## SavedVariables: WellEater_Settings
 ## DependsOn: LibAddonMenu-2.0>=28
 
