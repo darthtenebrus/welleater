@@ -17,9 +17,12 @@ local L = {
             " Weile ohne Nahrung in einer kritischen Situation",
 
     youEat = "Sie haben <<1>> gegessen",
-    youCharge = "Eingeladen <<1>>",
-    youRepair = "Reparieren <<1>>",
+    youCharge = "Eingeladen <<1>> mit <<2>>",
+    youChargeScreen = "Eingeladen <<1>>",
+    youRepair = "Reparieren <<1>> mit <<2>>",
+    youRepairScreen = "Reparieren <<1>>",
     allRepair = "Alles wird repariert",
+    allRepairScreen = "Alles wird repariert mit <<1>>",
     outputSetupHeader = "Anzeigen die Nachricht",
     outputOnScreen = "Auf den Bildschirm",
     outputSetupHeader_TT = "Wenn die Einstellung aktiviert ist, wird eine Nachricht über das gegessene Gericht" ..
