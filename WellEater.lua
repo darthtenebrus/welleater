@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.6"
+WellEater.Version = "1.1.7"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -334,17 +334,18 @@ local function checkAndRepair()
                         local formattedName
                         local chatFormattedName
                         if IsItemNonCrownRepairKit(BAG_BACKPACK, slotId) then
-                            local iName = GetItemLinkName(GetItemLink(BAG_WORN, testSlot))
+                            local withName = GetItemLink(BAG_BACKPACK, slotId, LINK_STYLE_BRACKETS)
+                            RepairItemWithRepairKit(BAG_WORN, testSlot, BAG_BACKPACK, slotId)
+                            local iLinkName = GetItemLink(BAG_WORN, testSlot, LINK_STYLE_BRACKETS)
+                            local iName = GetItemLinkName(iLinkName)
                             formattedName = zo_strformat(locale.youRepairScreen, iName) -- no control codes
                             chatFormattedName = zo_strformat(locale.youRepair,
-                                    GetItemLink(BAG_WORN, testSlot, LINK_STYLE_BRACKETS),
-                                    GetItemLink(BAG_BACKPACK, slotId, LINK_STYLE_BRACKETS)
+                                    iLinkName,
+                                    withName
                             )
-                            RepairItemWithRepairKit(BAG_WORN, testSlot, BAG_BACKPACK, slotId)
-
                         elseif locSettings.useCrownRepair then
-                            formattedName = locale.allRepair
-                            chatFormattedName = zo_strformat(locale.allRepairScreen,
+                            formattedName = locale.allRepairScreen
+                            chatFormattedName = zo_strformat(locale.allRepair,
                                     GetItemLink(BAG_BACKPACK, slotId, LINK_STYLE_BRACKETS))
                             tryToUseItem(BAG_BACKPACK, slotId)
                             wasCrownUsed = true
@@ -422,14 +423,16 @@ local function checkEquippedWeapon()
                         local useThis = (specializedItemType ~= SPECIALIZED_ITEMTYPE_CROWN_ITEM or
                                 (useCrownGems and specializedItemType == SPECIALIZED_ITEMTYPE_CROWN_ITEM))
                         if useThis then
-                            local iName = GetItemLinkName(GetItemLink(BAG_WORN, testSlot))
-                            local locale = WellEater:getLocale()
-                            local formattedName = zo_strformat(locale.youCharge, iName) -- no control codes
-                            local chatFormattedName = zo_strformat(locale.youChargeScreen,
-                                    GetItemLink(BAG_WORN, testSlot, LINK_STYLE_BRACKETS),
-                                    GetItemLink(BAG_BACKPACK, slotId, LINK_STYLE_BRACKETS)
-                            )
+                            local withName = GetItemLink(BAG_BACKPACK, slotId, LINK_STYLE_BRACKETS)
                             ChargeItemWithSoulGem(BAG_WORN, testSlot, BAG_BACKPACK, slotId)
+                            local iLinkName = GetItemLink(BAG_WORN, testSlot, LINK_STYLE_BRACKETS)
+                            local iName = GetItemLinkName(iLinkName)
+                            local locale = WellEater:getLocale()
+                            local formattedName = zo_strformat(locale.youChargeScreen, iName) -- no control codes
+                            local chatFormattedName = zo_strformat(locale.youCharge,
+                                    iLinkName,
+                                    withName
+                            )
                             df("[%s] %s", WellEater.AddonName, chatFormattedName)
                             local toScreen = locSettings.notifyToScreen
                             if toScreen then
