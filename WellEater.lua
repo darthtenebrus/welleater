@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.7"
+WellEater.Version = "1.1.8"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -641,6 +641,27 @@ local function InitOnLoad(_, addonName)
                 ShutDown()
             end
     )
+
+    -- sprint
+    local SPRINT_ABILITY_ID = 973
+    EVENT_MANAGER:RegisterForEvent(WellEater.AddonName, EVENT_COMBAT_EVENT, function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
+        if(hitValue == 0) then -- seems the event triggers twice, once with hitValue 0 and a second time with 1
+            --d("sprint start")
+            ShutDown()
+        end
+    end)
+    EVENT_MANAGER:AddFilterForEvent(WellEater.AddonName, EVENT_COMBAT_EVENT, REGISTER_FILTER_UNIT_TAG, "player")
+    EVENT_MANAGER:AddFilterForEvent(WellEater.AddonName, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_GAINED)
+    EVENT_MANAGER:AddFilterForEvent(WellEater.AddonName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, SPRINT_ABILITY_ID)
+
+    EVENT_MANAGER:RegisterForEvent(WellEater.AddonName, EVENT_COMBAT_EVENT, function(_, result, isError, abilityName, abilityGraphic, abilityActionSlotType, sourceName, sourceType, targetName, targetType, hitValue, powerType, damageType, log, sourceUnitId, targetUnitId, abilityId)
+        --d("sprint end")
+        StartUp()
+    end)
+    EVENT_MANAGER:AddFilterForEvent(WellEater.AddonName, EVENT_COMBAT_EVENT, REGISTER_FILTER_UNIT_TAG, "player")
+    EVENT_MANAGER:AddFilterForEvent(WellEater.AddonName, EVENT_COMBAT_EVENT, REGISTER_FILTER_COMBAT_RESULT, ACTION_RESULT_EFFECT_FADED)
+    EVENT_MANAGER:AddFilterForEvent(WellEater.AddonName, EVENT_COMBAT_EVENT, REGISTER_FILTER_ABILITY_ID, SPRINT_ABILITY_ID)
+    -- end sprint
 
     EVENT_MANAGER:RegisterForEvent(WellEater.AddonName, EVENT_LUA_ERROR, OnUIError)
 
