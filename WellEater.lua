@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.8"
+WellEater.Version = "1.1.9"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -146,6 +146,7 @@ NAMESPACE.blackList = {
     [88445] = true, -- erhöhter Erfahrungsgewinn
     [89683] = true, -- erhöhter Erfahrungsgewinn
     [91369] = true, -- erhöhter Erfahrungsgewinn der Narrenpastete
+    [181478] = true, -- Jubiläums-Erfahrungsbonus 2023
 }
 
 NAMESPACE.skillUpItems = {
