@@ -2,7 +2,7 @@ WellEater = WellEater or {}
 WellEater.WELLEATER_SAVED_VERSION = 1
 WellEater.AddonName = "WellEater"
 WellEater.DisplayName = "|cFFFFFFWell |c0099FFEater|r"
-WellEater.Version = "1.1.9"
+WellEater.Version = "1.2.0"
 WellEater.Author = "|c5EFFF5esorochinskiy|r"
 local NAMESPACE = {}
 NAMESPACE.settingsDefaults = {
@@ -382,7 +382,7 @@ local function checkEquippedWeapon()
 
     for testSlot, isToCheck in pairs(locSettings.slots) do
         if isToCheck and HasItemInSlot(BAG_WORN, testSlot)
-                and not IsLockedWeaponSlot(testSlot) then
+                and IsItemChargeable(BAG_WORN, testSlot) then
             local linkId = GetItemLink(BAG_WORN, testSlot)
             local numCharges = GetItemLinkNumEnchantCharges(linkId)
             --df("numCharges = %s", numCharges)
